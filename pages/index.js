@@ -106,8 +106,11 @@ export default function Home() {
               <span className="absolute bottom-0 left-12 sm:left-0 w-40 h-1 bg-gradient-to-r from-indigo-500 to-purple-400 rounded-full"></span>
             </h1>
            <PricingEngineShowcase />
-          <Link href="/monte-carlo" className="block p-4 bg-gray-100 rounded hover:bg-gray-200">
-  Monte Carlo Forecast Simulator
+          <Link
+  href="/monte-carlo"
+  className="bg-sky-600 text-white font-semibold px-4 py-2 rounded hover:bg-sky-500 transition"
+>
+  Monte Carlo Forecast
 </Link>
           <p className="mt-6 text-gray-400 w-full lg:w-3/4">
               I build scalable ML systems, design SaaS pricing strategies, and
