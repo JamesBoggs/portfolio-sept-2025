@@ -112,9 +112,10 @@ export default function Home() {
 >
   Monte Carlo Forecast
 </Link>
-    <Link href="/elasticity-simulator" className="bg-slate-800 p-6 rounded-lg hover:bg-slate-700 transition">
-  <h2 className="text-white text-xl font-semibold mb-2">Elasticity Simulator</h2>
-  <p className="text-slate-300 text-sm">Visualize how pricing moves affect demand and revenue.</p>
+    <Link href="/elasticity-simulator">
+  <button className="bg-sky-600 text-white font-semibold px-4 py-2 rounded hover:bg-sky-500 transition">
+    Elasticity Simulator
+  </button>
 </Link>
           <p className="mt-6 text-gray-400 w-full lg:w-3/4">
               I build scalable ML systems, design SaaS pricing strategies, and
