@@ -1,11 +1,9 @@
 module.exports = {
   theme: {
     extend: {
-      fontFamily: {
-        poppins: ['Poppins', 'sans-serif'],
+      colors: {
+        tiffany: '#81D8D0',   // Tiffany Blue
       },
     },
   },
-  content: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
-  plugins: [],
-}
+};
