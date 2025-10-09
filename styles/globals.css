@@ -11,3 +11,14 @@ body {
   margin-top: calc(3rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(3rem * var(--tw-space-y-reverse));
 }
+button, .btn {
+  @apply bg-sky-600 text-white font-semibold px-4 py-2 rounded hover:bg-sky-500 transition;
+}
+
+h1, h2, h3 {
+  @apply text-white font-bold;
+}
+
+body {
+  @apply bg-slate-900 text-gray-100;
+}
