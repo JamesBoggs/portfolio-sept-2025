@@ -106,17 +106,22 @@ export default function Home() {
               <span className="absolute bottom-0 left-12 sm:left-0 w-40 h-1 bg-gradient-to-r from-indigo-500 to-purple-400 rounded-full"></span>
             </h1>
            <PricingEngineShowcase />
-          <Link
-  href="/monte-carlo"
-  className="bg-sky-600 text-white font-semibold px-4 py-2 rounded hover:bg-sky-500 transition"
->
-  Monte Carlo Forecast
-</Link>
-    <Link href="/elasticity-simulator">
-  <button className="bg-sky-600 text-white font-semibold px-4 py-2 rounded hover:bg-sky-500 transition">
+
+<div className="flex gap-4 mt-6 flex-wrap">
+  <Link
+    href="/monte-carlo"
+    className="inline-block bg-[#81D8D0] text-black font-semibold px-5 py-2.5 rounded-lg hover:bg-[#6fcfc7] transition-transform transform hover:scale-105"
+  >
+    Monte Carlo Forecast
+  </Link>
+
+  <Link
+    href="/elasticity-simulator"
+    className="inline-block bg-[#81D8D0] text-black font-semibold px-5 py-2.5 rounded-lg hover:bg-[#6fcfc7] transition-transform transform hover:scale-105"
+  >
     Elasticity Simulator
-  </button>
-</Link>
+  </Link>
+</div>
           <p className="mt-6 text-gray-400 w-full lg:w-3/4">
               I build scalable ML systems, design SaaS pricing strategies, and
               create financial models that align technology with business growth.
