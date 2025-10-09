@@ -107,21 +107,15 @@ export default function Home() {
             </h1>
            <PricingEngineShowcase />
 
-<div className="flex flex-wrap gap-4 mt-6">
-  <Link
-    href="/monte-carlo"
-    className="px-6 py-3 bg-tiffany text-black font-semibold rounded-lg shadow-md
-               hover:shadow-lg hover:scale-105 transition-transform duration-200"
-  >
-    Monte Carlo Forecast
+<div className="grid md:grid-cols-2 gap-6 mt-6">
+  <Link href="/monte-carlo" className="card">
+    <h2 className="text-xl font-semibold mb-2 text-tiffany">Monte Carlo Forecast</h2>
+    <p className="text-slate-300 text-sm">Simulate ARR outcomes…</p>
   </Link>
 
-  <Link
-    href="/elasticity-simulator"
-    className="px-6 py-3 bg-tiffany text-black font-semibold rounded-lg shadow-md
-               hover:shadow-lg hover:scale-105 transition-transform duration-200"
-  >
-    Elasticity Simulator
+  <Link href="/elasticity-simulator" className="card">
+    <h2 className="text-xl font-semibold mb-2 text-tiffany">Elasticity Simulator</h2>
+    <p className="text-slate-300 text-sm">Visualize how pricing moves…</p>
   </Link>
 </div>
 
