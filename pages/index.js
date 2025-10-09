@@ -107,21 +107,24 @@ export default function Home() {
             </h1>
            <PricingEngineShowcase />
 
-<div className="flex gap-4 mt-6 flex-wrap">
+<div className="flex flex-wrap gap-4 mt-6">
   <Link
     href="/monte-carlo"
-    className="inline-block bg-[#81D8D0] text-black font-semibold px-5 py-2.5 rounded-lg hover:bg-[#6fcfc7] transition-transform transform hover:scale-105"
+    className="px-6 py-3 bg-tiffany text-black font-semibold rounded-lg shadow-md
+               hover:shadow-lg hover:scale-105 transition-transform duration-200"
   >
     Monte Carlo Forecast
   </Link>
 
   <Link
     href="/elasticity-simulator"
-    className="inline-block bg-[#81D8D0] text-black font-semibold px-5 py-2.5 rounded-lg hover:bg-[#6fcfc7] transition-transform transform hover:scale-105"
+    className="px-6 py-3 bg-tiffany text-black font-semibold rounded-lg shadow-md
+               hover:shadow-lg hover:scale-105 transition-transform duration-200"
   >
     Elasticity Simulator
   </Link>
 </div>
+
           <p className="mt-6 text-gray-400 w-full lg:w-3/4">
               I build scalable ML systems, design SaaS pricing strategies, and
               create financial models that align technology with business growth.
