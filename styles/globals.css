@@ -2,28 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ——— Global Base Styles ——— */
-body {
-  @apply bg-slate-900 text-gray-100 font-poppins;
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+/* Body & overall layout */
+html, body {
+  @apply min-h-screen bg-slate-900 text-gray-100 font-poppins;
 }
 
-.space-y-16 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(3rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(3rem * var(--tw-space-y-reverse)));
-}
-
-/* ——— Headings ——— */
+/* Headings */
 h1, h2, h3 {
-  @apply text-tiffany font-bold;
+  @apply font-bold text-white;
 }
 
-/* ——— Buttons ——— */
+/* Buttons */
 button, .btn {
-  @apply bg-tiffany text-slate-900 font-semibold px-4 py-2 rounded hover:bg-tiffany/90 transition;
+  @apply inline-block bg-sky-600 text-white font-semibold px-4 py-2 rounded
+         hover:bg-sky-500 transition-shadow shadow-card;
 }
 
-/* ——— Links ——— */
+/* Cards / project boxes */
+.card {
+  @apply bg-slate-800 border border-white/10 rounded-xl p-6 shadow-card
+         hover:shadow-lg hover:scale-[1.02] transition-transform duration-200;
+}
+
+/* Links */
 a {
-  @apply text-tiffany hover:text-tiffany/80 transition;
+  @apply text-sky-400 hover:text-sky-300 transition;
 }
