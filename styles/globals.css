@@ -34,6 +34,13 @@ button, .btn {
   @apply bg-sky-600 text-white font-semibold px-4 py-2 rounded hover:bg-sky-500 transition;
 }
 
-a {
+{
   @apply text-sky-400 hover:text-sky-300;
+}
+h1, h2, h3 {
+  @apply text-tiffany font-bold;
+}
+
+button, .btn {
+  @apply bg-tiffany text-slate-900 font-semibold px-4 py-2 rounded hover:bg-tiffany/90 transition;
 }
