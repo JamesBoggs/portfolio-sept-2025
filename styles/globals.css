@@ -2,45 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ——— Global Base Styles ——— */
 body {
-  @apply bg-black text-white;
+  @apply bg-slate-900 text-gray-100 font-poppins;
 }
 
 .space-y-16 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-y-reverse: 0;
   margin-top: calc(3rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(3rem * var(--tw-space-y-reverse));
-}
-button, .btn {
-  @apply bg-sky-600 text-white font-semibold px-4 py-2 rounded hover:bg-sky-500 transition;
+  margin-bottom: calc(3rem * var(--tw-space-y-reverse)));
 }
 
-h1, h2, h3 {
-  @apply text-white font-bold;
-}
-
-body {
-  @apply bg-slate-900 text-gray-100;
-}
-body {
-  @apply bg-slate-900 text-gray-100;
-}
-
-h1, h2, h3 {
-  @apply text-white font-bold;
-}
-
-button, .btn {
-  @apply bg-sky-600 text-white font-semibold px-4 py-2 rounded hover:bg-sky-500 transition;
-}
-
-{
-  @apply text-sky-400 hover:text-sky-300;
-}
+/* ——— Headings ——— */
 h1, h2, h3 {
   @apply text-tiffany font-bold;
 }
 
+/* ——— Buttons ——— */
 button, .btn {
   @apply bg-tiffany text-slate-900 font-semibold px-4 py-2 rounded hover:bg-tiffany/90 transition;
+}
+
+/* ——— Links ——— */
+a {
+  @apply text-tiffany hover:text-tiffany/80 transition;
 }
