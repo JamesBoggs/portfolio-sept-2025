@@ -1,91 +1,217 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+import Head from "next/head";
+import Link from "next/link";
+import { FaEnvelope } from "react-icons/fa";
+import { useState } from "react";
+import PricingEngineShowcase from "./components/PricingEngineShowcase";
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+const socialLinks = [
+  { href: "mailto:jboggs.econ@gmail.com", label: "Email", icon: FaEnvelope },
+];
 
-html, body {
-  @apply min-h-screen bg-black text-white font-poppins;
-}
+export default function Home() {
+  const [openCard, setOpenCard] = useState(null);
 
-h1, h2, h3 {
-  @apply font-bold;
-}
+  const notebookCards = [
+    {
+      id: "pricing",
+      title: "Pricing & SaaS Analytics",
+      gradient: "from-indigo-400 to-purple-600",
+      textColor: "text-white",
+      src: "/notebooks/02_pricing_bandits_kaseya.html",
+    },
+    {
+      id: "ml",
+      title: "AI/ML Engineering (Python, PyTorch, NLP)",
+      gradient: "from-green-400 to-emerald-600",
+      textColor: "text-black",
+      src: "/notebooks/01_bayesian_ab_cuped_kaseya.html",
+    },
+    {
+      id: "finance",
+      title: "Financial Modeling & Treasury Strategy",
+      gradient: "from-orange-400 to-red-500",
+      textColor: "text-white",
+      src: "/notebooks/04_uplift_modeling_churn_kaseya.html",
+    },
+    {
+      id: "data",
+      title: "Data Pipelines & Automation",
+      gradient: "from-blue-400 to-cyan-500",
+      textColor: "text-black",
+      src: "/notebooks/03_did_automation_humanscale.html",
+    },
+  ];
 
-button, .btn {
-  @apply inline-block bg-sky-600 text-white font-semibold px-4 py-2 rounded
-         hover:bg-sky-500 transition;
-}
+  return (
+    <div className="min-h-screen bg-black text-white font-poppins">
+      <Head>
+        <title>James Boggs – Portfolio</title>
+        <meta
+          name="description"
+          content="Portfolio of James Boggs – Finance & AI/ML Engineer specializing in SaaS pricing, analytics, and ML pipelines."
+        />
+      </Head>
 
-a {
-  @apply text-sky-400 hover:text-sky-300 transition;
-}
-@keyframes rainbow {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+      <main className="flex flex-col md:flex-row">
+        {/* Sidebar */}
+        <aside className="md:sticky md:top-0 md:h-screen md:w-1/2 lg:w-2/5 bg-white text-black p-8 md:rounded-r-3xl shadow-lg flex justify-center items-center">
+          <div className="flex flex-col items-center text-center space-y-5">
+            {/* Photo wrapped */}
+            <div className="circuit-frame rounded-2xl">
+              <img
+                src="/profile.png"
+                alt="James Boggs Profile Picture"
+                className="circuit-inner w-80 h-96 object-cover rounded-2xl"
+                loading="lazy"
+              />
+            </div>
 
-.rainbow-border {
-  background: linear-gradient(
-    270deg,
-    #81D8D0,
-    #6EE7B7,
-    #60A5FA,
-    #C084FC,
-    #F472B6,
-    #FCD34D,
-    #81D8D0
+            <h2 className="text-2xl font-extrabold mt-4">James Boggs</h2>
+            <p className="text-gray-600 max-w-xs">
+              Finance & AI/ML Engineer | SaaS Pricing, Treasury Strategy, and ML Systems
+            </p>
+
+            <nav aria-label="Contact">
+              <ul className="flex space-x-4 text-indigo-500 text-xl">
+                {socialLinks.map(({ href, label, icon: Icon }) => (
+                  <li key={label}>
+                    <Link
+                      href={href}
+                      aria-label={label}
+                      className="transition-transform hover:scale-150"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Icon />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <section className="w-full md:w-1/2 lg:w-4/5 overflow-y-auto p-8">
+          <div className="max-w-6xl mx-auto space-y-16 text-center">
+            {/* Hero */}
+            <header>
+              <h1 className="text-5xl lg:text-6xl font-extrabold leading-tight inline-block">
+                FINANCE & AI/ML <br />
+                <span className="text-[#81D8D0] font-extrabold">ENGINEER</span>
+              </h1>
+
+              {/* full-width circuit trace */}
+              <div className="my-6">
+                <div className="circuit-trace w-full" />
+              </div>
+
+              {/* Pricing demo — tighter, centered, readable headers */}
+              <div className="circuit-frame rounded-2xl mt-8">
+                <div className="circuit-inner rounded-2xl p-4 md:p-6 lg:p-8 max-w-5xl mx-auto overflow-hidden
+                                [&_h1]:text-slate-100 [&_h2]:text-slate-100 [&_h3]:text-slate-100
+                                [&_th]:text-slate-100 [&_label]:text-slate-200">
+                  <PricingEngineShowcase />
+                </div>
+              </div>
+
+              {/* Simulators — even borders + centered text + clear CTAs */}
+              <div className="grid md:grid-cols-2 gap-6 md:gap-8 mt-8">
+                <div className="circuit-frame rounded-2xl">
+                  <Link
+                    href="/monte-carlo"
+                    className="circuit-inner block rounded-2xl p-6 md:p-8 text-center transition-transform hover:scale-[1.02]"
+                  >
+                    <h2 className="text-2xl font-semibold mb-2 text-[#81D8D0]">
+                      Monte Carlo Forecast
+                    </h2>
+                    <p className="text-slate-300 text-sm max-w-md mx-auto">
+                      Simulate ARR outcomes with stochastic growth and churn.
+                    </p>
+                    <span className="mt-5 inline-block rounded-lg bg-[#81D8D0] text-black px-5 py-2.5 font-semibold hover:bg-[#6fcfc7]">
+                      Open Demo →
+                    </span>
+                  </Link>
+                </div>
+
+                <div className="circuit-frame rounded-2xl">
+                  <Link
+                    href="/elasticity-simulator"
+                    className="circuit-inner block rounded-2xl p-6 md:p-8 text-center transition-transform hover:scale-[1.02]"
+                  >
+                    <h2 className="text-2xl font-semibold mb-2 text-[#81D8D0]">
+                      Elasticity Simulator
+                    </h2>
+                    <p className="text-slate-300 text-sm max-w-md mx-auto">
+                      Visualize how pricing moves affect demand and revenue.
+                    </p>
+                    <span className="mt-5 inline-block rounded-lg bg-[#81D8D0] text-black px-5 py-2.5 font-semibold hover:bg-[#6fcfc7]">
+                      Open Demo →
+                    </span>
+                  </Link>
+                </div>
+              </div>
+
+              <p className="mt-8 text-gray-300 w-full lg:w-3/4 mx-auto">
+                I build scalable ML systems, design SaaS pricing strategies, and create
+                financial models that align technology with business growth. Experience at
+                Kaseya (SaaS strategy, OCR automation) and Humanscale (treasury automation,
+                pricing elasticity).
+              </p>
+
+              {/* Stats */}
+              <div className="flex flex-wrap gap-12 mt-10 justify-center">
+                {[
+                  { value: "6+", label: "Years in Finance & Strategy" },
+                  { value: "10+", label: "ML/AI Projects Delivered" },
+                  { value: "100M+", label: "SaaS ARR Forecasted" },
+                ].map(({ value, label }) => (
+                  <div key={label} className="text-center">
+                    <p className="text-5xl font-semibold">{value}</p>
+                    <h3 className="text-sm text-gray-400 uppercase">{label}</h3>
+                  </div>
+                ))}
+              </div>
+            </header>
+
+            {/* Notebook Cards — centered grid, even borders, no tilt */}
+            <section aria-label="Notebook Demos">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
+                {notebookCards.map(({ id, title, gradient, textColor, src }) => (
+                  <div
+                    key={id}
+                    onClick={() => setOpenCard(openCard === id ? null : id)}
+                    className="circuit-frame rounded-2xl cursor-pointer"
+                  >
+                    <div
+                      className={`circuit-inner rounded-2xl p-6 md:p-8 text-center bg-gradient-to-br ${gradient} ${textColor} transition-transform duration-300 hover:scale-[1.02]`}
+                    >
+                      <h3 className="text-xl font-semibold">{title}</h3>
+                      <p className="text-sm mt-1 opacity-90">
+                        {openCard === id ? "Click to close notebook" : "Click to preview notebook"}
+                      </p>
+
+                      {openCard === id && (
+                        <iframe
+                          src={src}
+                          className="w-full h-72 mt-4 rounded-xl transition-all duration-500"
+                          loading="lazy"
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <footer className="text-center text-xs text-gray-500 pb-6">
+              © {new Date().getFullYear()} James Boggs | Powered by{" "}
+              <span className="text-indigo-400">Next.js</span>
+            </footer>
+          </div>
+        </section>
+      </main>
+    </div>
   );
-  background-size: 400% 400%;
-  animation:
-    rainbow 8s linear infinite,
-    pulseGlow 4s ease-in-out infinite;
-  border-radius: 1rem;
-  padding: 2px;
-}
-@keyframes pulseGlow {
-  0%, 100% {
-    box-shadow:
-      0 0 8px rgba(129, 216, 208, 0.4),
-      0 0 16px rgba(129, 216, 208, 0.3),
-      0 0 32px rgba(129, 216, 208, 0.2);
-  }
-  50% {
-    box-shadow:
-      0 0 12px rgba(129, 216, 208, 0.6),
-      0 0 24px rgba(129, 216, 208, 0.5),
-      0 0 48px rgba(129, 216, 208, 0.4);
-  }
-}
-/* Full-width animated electric divider */
-.rainbow-hr {
-  height: 3px;
-  width: 100%;
-  background: linear-gradient(
-    270deg,
-    #81D8D0,
-    #6EE7B7,
-    #60A5FA,
-    #C084FC,
-    #F472B6,
-    #FCD34D,
-    #81D8D0
-  );
-  background-size: 400% 100%;
-  animation: rainbow 15s linear infinite, pulseGlow 6s ease-in-out infinite;
-  border-radius: 9999px;
-  box-shadow: 0 0 12px rgba(129, 216, 208, 0.35);
 }
 
-/* (You already have these keyframes from earlier; keep them) */
-/*
-@keyframes rainbow { ... }
-@keyframes pulseGlow { ... }
-*/
-
-/* Small fix so inner rounded corners always match wrapper */
-.rainbow-border,
-.rainbow-border > * {
-  border-radius: 1rem; /* 2xl */
-}
