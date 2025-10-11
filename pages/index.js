@@ -111,24 +111,35 @@ export default function Home() {
             <PricingEngineShowcase />
 
             <div className="grid md:grid-cols-2 gap-6 mt-6">
-              <Link href="/monte-carlo" className="card">
-                <h2 className="text-xl font-semibold mb-2 text-tiffany">
-                  Monte Carlo Forecast
-                </h2>
-                <p className="text-slate-300 text-sm">
-                  Simulate ARR outcomes with stochastic growth and churn.
-                </p>
-              </Link>
+  <div className="relative rounded-xl p-[2px] rainbow-border">
+    <Link
+      href="/monte-carlo"
+      className="block bg-slate-900 rounded-xl p-6 transition-transform hover:scale-[1.02]"
+    >
+      <h2 className="text-xl font-semibold mb-2 text-tiffany">
+        Monte Carlo Forecast
+      </h2>
+      <p className="text-slate-300 text-sm">
+        Simulate ARR outcomes with stochastic growth and churn.
+      </p>
+    </Link>
+  </div>
 
-              <Link href="/elasticity-simulator" className="card">
-                <h2 className="text-xl font-semibold mb-2 text-tiffany">
-                  Elasticity Simulator
-                </h2>
-                <p className="text-slate-300 text-sm">
-                  Visualize how pricing moves affect demand and revenue.
-                </p>
-              </Link>
-            </div>
+  <div className="relative rounded-xl p-[2px] rainbow-border">
+    <Link
+      href="/elasticity-simulator"
+      className="block bg-slate-900 rounded-xl p-6 transition-transform hover:scale-[1.02]"
+    >
+      <h2 className="text-xl font-semibold mb-2 text-tiffany">
+        Elasticity Simulator
+      </h2>
+      <p className="text-slate-300 text-sm">
+        Visualize how pricing moves affect demand and revenue.
+      </p>
+    </Link>
+  </div>
+</div>
+    
 
             <p className="mt-6 text-gray-400 w-full lg:w-3/4">
               I build scalable ML systems, design SaaS pricing strategies, and create
