@@ -214,4 +214,84 @@ export default function Home() {
     </div>
   );
 }
+/* Animations (keep if already present) */
+@keyframes rainbow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes pulseGlow {
+  0%,100% {
+    box-shadow:
+      0 0 8px rgba(129,216,208,0.35),
+      0 0 16px rgba(129,216,208,0.25),
+      0 0 28px rgba(129,216,208,0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 12px rgba(129,216,208,0.55),
+      0 0 24px rgba(129,216,208,0.45),
+      0 0 40px rgba(129,216,208,0.35);
+  }
+}
 
+/* Shared RGB gradient */
+:root {
+  --rgb-grad: linear-gradient(
+    270deg,
+    #81D8D0,
+    #6EE7B7,
+    #60A5FA,
+    #C084FC,
+    #F472B6,
+    #FCD34D,
+    #81D8D0
+  );
+}
+
+/* Thin, full-width circuit trace (divider) */
+.circuit-trace {
+  position: relative;
+  height: 2px;
+  width: 100%;
+  border-radius: 9999px;
+  overflow: hidden;
+  filter: drop-shadow(0 0 8px rgba(129,216,208,0.35));
+}
+.circuit-trace::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--rgb-grad);
+  background-size: 400% 400%;
+  animation: rainbow 14s linear infinite, pulseGlow 6s ease-in-out infinite;
+}
+
+/* Perfectly even animated border (no bottom-thicker illusion) */
+.circuit-frame {
+  position: relative;
+  border-radius: 1rem; /* 2xl */
+}
+.circuit-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;                 /* border thickness */
+  border-radius: inherit;
+  background: var(--rgb-grad);
+  background-size: 400% 400%;
+  animation: rainbow 14s linear infinite, pulseGlow 6s ease-in-out infinite;
+
+  /* draw only the border using masks */
+  -webkit-mask: 
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+}
+.circuit-inner {
+  position: relative;
+  display: block;
+  background: #0f172a;            /* slate-900 */
+  border-radius: inherit;
+}
