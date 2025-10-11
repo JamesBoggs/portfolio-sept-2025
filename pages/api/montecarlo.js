@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch("http://localhost:8000/simulate", {
+    const response = await fetch("https://montecarlo-fastapi.onrender.com/simulate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -15,7 +15,6 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-
     return res.status(200).json({
       model: "montecarlo-v1.0.0",
       ...data,
