@@ -20,3 +20,27 @@ button, .btn {
 a {
   @apply text-sky-400 hover:text-sky-300 transition;
 }
+@keyframes rainbow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Neon rainbow border wrapper */
+.rainbow-border {
+  background: linear-gradient(
+    270deg,
+    #81D8D0,
+    #6EE7B7,
+    #60A5FA,
+    #C084FC,
+    #F472B6,
+    #FCD34D,
+    #81D8D0
+  );
+  background-size: 400% 400%;
+  animation: rainbow 8s ease infinite;
+  border-radius: 1rem;
+  padding: 2px;
+  box-shadow: 0 0 25px rgba(129, 216, 208, 0.25);
+}
