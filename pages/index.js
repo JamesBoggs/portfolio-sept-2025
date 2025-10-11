@@ -54,17 +54,31 @@ export default function Home() {
 
       const responses = await Promise.all(
         endpoints.map(async (name) => {
-          const res = await fetch(`/api/${name}`);
-          const data = await res.json();
-          return {
-            ...data,
-            chartData: [
-              { x: "W1", y: Math.random() * 100 },
-              { x: "W2", y: Math.random() * 100 },
-              { x: "W3", y: Math.random() * 100 },
-              { x: "W4", y: Math.random() * 100 },
-            ],
-          };
+          try {
+            const res = await fetch(`/api/${name}`);
+            const data = await res.json();
+
+            return {
+              model: data.model || name,
+              status: "online",
+              lastUpdated: new Date().toLocaleString(),
+              data,
+              chartData: [
+                { x: "W1", y: Math.random() * 100 },
+                { x: "W2", y: Math.random() * 100 },
+                { x: "W3", y: Math.random() * 100 },
+                { x: "W4", y: Math.random() * 100 },
+              ],
+            };
+          } catch (err) {
+            return {
+              model: name,
+              status: "offline",
+              lastUpdated: new Date().toLocaleString(),
+              data: { error: "API failed" },
+              chartData: [],
+            };
+          }
         })
       );
 
@@ -73,7 +87,8 @@ export default function Home() {
 
     load();
   }, []);
-    return (
+
+  return (
     <div className="min-h-screen bg-black text-white font-poppins">
       <Head>
         <title>James Boggs – Portfolio</title>
@@ -97,7 +112,9 @@ export default function Home() {
               </div>
             </div>
             <h2 className="text-2xl font-extrabold mt-4">James Boggs</h2>
-            <p className="text-gray-600 max-w-xs">Finance & AI/ML Engineer | SaaS Pricing, Treasury Strategy, ML Systems</p>
+            <p className="text-gray-600 max-w-xs">
+              Finance & AI/ML Engineer | SaaS Pricing, Treasury Strategy, ML Systems
+            </p>
             <nav>
               <ul className="flex space-x-4 text-indigo-500 text-xl">
                 {socialLinks.map(({ href, label, icon: Icon }) => (
@@ -135,7 +152,7 @@ export default function Home() {
                   <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20">
                     <h2 className="text-lg font-bold text-[#81D8D0] mb-1">{m.model}</h2>
                     <div className="flex items-center gap-2 text-sm mb-2">
-                      <span className={`badge ${m.status}`}></span>
+                      <span className={`inline-block w-3 h-3 rounded-full ${m.status === "online" ? "bg-green-500" : "bg-red-500"}`}></span>
                       <span>{m.status.charAt(0).toUpperCase() + m.status.slice(1)}</span>
                     </div>
                     <p className="text-xs text-gray-400 mb-2">Last Updated: {m.lastUpdated}</p>
@@ -147,14 +164,16 @@ export default function Home() {
                         <Tooltip />
                       </LineChart>
                     </ResponsiveContainer>
-                    <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-32">{JSON.stringify(m.data, null, 2)}</pre>
+                    <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-32">
+                      {JSON.stringify(m.data, null, 2)}
+                    </pre>
                   </div>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* Notebook Cards – Collapsed */}
+          {/* Notebook Cards */}
           <section className="space-y-4">
             <h2 className="text-2xl font-bold text-[#81D8D0] text-center">Notebook Case Studies</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
