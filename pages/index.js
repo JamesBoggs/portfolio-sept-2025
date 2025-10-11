@@ -16,28 +16,24 @@ export default function Home() {
       id: "pricing",
       title: "Pricing & SaaS Analytics",
       gradient: "from-indigo-400 to-purple-600",
-      textColor: "text-white",
       src: "/notebooks/02_pricing_bandits_kaseya.html",
     },
     {
       id: "ml",
       title: "AI/ML Engineering (Python, PyTorch, NLP)",
       gradient: "from-green-400 to-emerald-600",
-      textColor: "text-black",
       src: "/notebooks/01_bayesian_ab_cuped_kaseya.html",
     },
     {
       id: "finance",
       title: "Financial Modeling & Treasury Strategy",
       gradient: "from-orange-400 to-red-500",
-      textColor: "text-white",
       src: "/notebooks/04_uplift_modeling_churn_kaseya.html",
     },
     {
       id: "data",
       title: "Data Pipelines & Automation",
       gradient: "from-blue-400 to-cyan-500",
-      textColor: "text-black",
       src: "/notebooks/03_did_automation_humanscale.html",
     },
   ];
@@ -122,12 +118,12 @@ export default function Home() {
                 <div className="circuit-frame rounded-2xl">
                   <Link
                     href="/monte-carlo"
-                    className="circuit-inner block rounded-2xl p-6 md:p-8 text-center transition-transform hover:scale-[1.02]"
+                    className="circuit-inner block rounded-2xl p-6 md:p-8 text-center transition-transform hover:scale-[1.02] font-poppins"
                   >
                     <h2 className="text-2xl font-semibold mb-2 text-[#81D8D0]">
                       Monte Carlo Forecast
                     </h2>
-                    <p className="text-slate-300 text-sm max-w-md mx-auto">
+                    <p className="text-slate-200 text-sm max-w-md mx-auto">
                       Simulate ARR outcomes with stochastic growth and churn.
                     </p>
                     <span className="mt-5 inline-block rounded-lg bg-[#81D8D0] text-black px-5 py-2.5 font-semibold hover:bg-[#6fcfc7]">
@@ -139,12 +135,12 @@ export default function Home() {
                 <div className="circuit-frame rounded-2xl">
                   <Link
                     href="/elasticity-simulator"
-                    className="circuit-inner block rounded-2xl p-6 md:p-8 text-center transition-transform hover:scale-[1.02]"
+                    className="circuit-inner block rounded-2xl p-6 md:p-8 text-center transition-transform hover:scale-[1.02] font-poppins"
                   >
                     <h2 className="text-2xl font-semibold mb-2 text-[#81D8D0]">
                       Elasticity Simulator
                     </h2>
-                    <p className="text-slate-300 text-sm max-w-md mx-auto">
+                    <p className="text-slate-200 text-sm max-w-md mx-auto">
                       Visualize how pricing moves affect demand and revenue.
                     </p>
                     <span className="mt-5 inline-block rounded-lg bg-[#81D8D0] text-black px-5 py-2.5 font-semibold hover:bg-[#6fcfc7]">
@@ -176,20 +172,20 @@ export default function Home() {
               </div>
             </header>
 
-            {/* Notebook Cards — centered grid, even borders */}
+            {/* Notebook Cards — consistent font & colors */}
             <section aria-label="Notebook Demos">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
-                {notebookCards.map(({ id, title, gradient, textColor, src }) => (
+                {notebookCards.map(({ id, title, gradient, src }) => (
                   <div
                     key={id}
                     onClick={() => setOpenCard(openCard === id ? null : id)}
                     className="circuit-frame rounded-2xl cursor-pointer"
                   >
                     <div
-                      className={`circuit-inner rounded-2xl p-6 md:p-8 text-center bg-gradient-to-br ${gradient} ${textColor} transition-transform duration-300 hover:scale-[1.02]`}
+                      className={`circuit-inner rounded-2xl p-6 md:p-8 text-center bg-gradient-to-br ${gradient} transition-transform duration-300 hover:scale-[1.02] font-poppins`}
                     >
-                      <h3 className="text-xl font-semibold">{title}</h3>
-                      <p className="text-sm mt-1 opacity-90">
+                      <h3 className="text-xl font-semibold text-[#81D8D0]">{title}</h3>
+                      <p className="text-sm mt-1 text-white/90">
                         {openCard === id ? "Click to close notebook" : "Click to preview notebook"}
                       </p>
 
