@@ -56,13 +56,16 @@ export default function Home() {
         {/* Sidebar */}
         <aside className="md:sticky md:top-0 md:h-screen md:w-1/2 lg:w-2/5 bg-white text-black p-8 md:rounded-r-3xl shadow-lg flex justify-center items-center">
           <div className="flex flex-col items-center text-center space-y-5">
-            <div className="relative rounded-2xl p-[2px] rainbow-border">
-              <img
-                src="/profile.png"
-                alt="James Boggs Profile Picture"
-                className="w-80 h-96 object-cover rounded-2xl"
-                loading="lazy"
-              />
+            {/* Photo with circuit border */}
+            <div className="circuit-frame rounded-2xl">
+              <div className="circuit-inner rounded-2xl p-1">
+                <img
+                  src="/profile.png"
+                  alt="James Boggs Profile Picture"
+                  className="w-80 h-96 object-cover rounded-2xl"
+                  loading="lazy"
+                />
+              </div>
             </div>
 
             <h2 className="text-2xl font-extrabold mt-4">James Boggs</h2>
@@ -91,121 +94,123 @@ export default function Home() {
         </aside>
 
         {/* Main Content */}
-        <section className="w-full md:w-1/2 lg:w-4/5 overflow-y-auto p-8 space-y-16">
-          {/* Hero */}
-          <header className="p-8 text-center">
-            <h1 className="text-5xl lg:text-6xl font-extrabold leading-tight inline-block">
-              FINANCE & AI/ML <br />
-              <span className="text-[#81D8D0] font-extrabold">ENGINEER</span>
-            </h1>
+        <section className="w-full md:w-1/2 lg:w-4/5 overflow-y-auto p-8">
+          <div className="max-w-6xl mx-auto space-y-16 text-center">
+            {/* Hero */}
+            <header>
+              <h1 className="text-5xl lg:text-6xl font-extrabold leading-tight inline-block">
+                FINANCE & AI/ML <br />
+                <span className="text-[#81D8D0] font-extrabold">ENGINEER</span>
+              </h1>
 
-            {/* full-width electric circuit divider */}
-            <div className="my-6">
-              <div className="rainbow-hr w-full" />
-            </div>
-
-            {/* Pricing demo — tighter, centered, readable headers */}
-            <div className="relative rounded-2xl p-[2px] rainbow-border mt-6">
-              <div className="bg-slate-900 rounded-2xl p-4 md:p-6 lg:p-8 max-w-5xl mx-auto overflow-hidden
-                              [&_h1]:text-slate-100 [&_h2]:text-slate-100 [&_h3]:text-slate-100
-                              [&_th]:text-slate-100 [&_label]:text-slate-200">
-                <PricingEngineShowcase />
-              </div>
-            </div>
-
-            {/* Simulators — even borders + centered text + clear CTAs */}
-            <div className="grid md:grid-cols-2 gap-6 mt-8">
-              <div className="relative rounded-2xl p-[2px] rainbow-border">
-                <Link
-                  href="/monte-carlo"
-                  className="block bg-slate-900 rounded-2xl p-6 md:p-8 text-center transition-transform hover:scale-[1.02]"
-                >
-                  <h2 className="text-2xl font-semibold mb-2 text-[#81D8D0]">
-                    Monte Carlo Forecast
-                  </h2>
-                  <p className="text-slate-300 text-sm max-w-md mx-auto">
-                    Simulate ARR outcomes with stochastic growth and churn.
-                  </p>
-                  <span className="mt-5 inline-block rounded-lg bg-[#81D8D0] text-black px-5 py-2.5 font-semibold hover:bg-[#6fcfc7]">
-                    Open Demo →
-                  </span>
-                </Link>
+              {/* full-width circuit trace */}
+              <div className="my-6">
+                <div className="circuit-trace w-full" />
               </div>
 
-              <div className="relative rounded-2xl p-[2px] rainbow-border">
-                <Link
-                  href="/elasticity-simulator"
-                  className="block bg-slate-900 rounded-2xl p-6 md:p-8 text-center transition-transform hover:scale-[1.02]"
-                >
-                  <h2 className="text-2xl font-semibold mb-2 text-[#81D8D0]">
-                    Elasticity Simulator
-                  </h2>
-                  <p className="text-slate-300 text-sm max-w-md mx-auto">
-                    Visualize how pricing moves affect demand and revenue.
-                  </p>
-                  <span className="mt-5 inline-block rounded-lg bg-[#81D8D0] text-black px-5 py-2.5 font-semibold hover:bg-[#6fcfc7]">
-                    Open Demo →
-                  </span>
-                </Link>
-              </div>
-            </div>
-
-            <p className="mt-8 text-gray-300 w-full lg:w-3/4 mx-auto">
-              I build scalable ML systems, design SaaS pricing strategies, and create
-              financial models that align technology with business growth. Experience at
-              Kaseya (SaaS strategy, OCR automation) and Humanscale (treasury automation,
-              pricing elasticity).
-            </p>
-
-            {/* Stats */}
-            <div className="flex flex-wrap gap-12 mt-10 justify-center">
-              {[
-                { value: "6+", label: "Years in Finance & Strategy" },
-                { value: "10+", label: "ML/AI Projects Delivered" },
-                { value: "100M+", label: "SaaS ARR Forecasted" },
-              ].map(({ value, label }) => (
-                <div key={label} className="text-center">
-                  <p className="text-5xl font-semibold">{value}</p>
-                  <h3 className="text-sm text-gray-400 uppercase">{label}</h3>
+              {/* Pricing demo — centered, tighter, readable headers */}
+              <div className="circuit-frame rounded-2xl mt-8">
+                <div className="circuit-inner rounded-2xl p-4 md:p-6 lg:p-8 max-w-5xl mx-auto overflow-hidden
+                                [&_h1]:text-slate-100 [&_h2]:text-slate-100 [&_h3]:text-slate-100
+                                [&_th]:text-slate-100 [&_label]:text-slate-200">
+                  <PricingEngineShowcase />
                 </div>
-              ))}
-            </div>
-          </header>
+              </div>
 
-          {/* Notebook Cards — even borders, centered text, no 3D warp */}
-          <section className="w-full xl:w-4/5 sm:pb-8 sm:pe-8" aria-label="Notebook Demos">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {notebookCards.map(({ id, title, gradient, textColor, src }) => (
-                <div
-                  key={id}
-                  onClick={() => setOpenCard(openCard === id ? null : id)}
-                  className="relative rounded-2xl p-[2px] rainbow-border cursor-pointer"
-                >
-                  <div
-                    className={`bg-gradient-to-br ${gradient} ${textColor} p-6 md:p-8 rounded-2xl text-center transition-transform duration-300 hover:scale-[1.02]`}
+              {/* Simulators — even borders + centered + clear CTAs */}
+              <div className="grid md:grid-cols-2 gap-6 md:gap-8 mt-8">
+                <div className="circuit-frame rounded-2xl">
+                  <Link
+                    href="/monte-carlo"
+                    className="circuit-inner block rounded-2xl p-6 md:p-8 text-center transition-transform hover:scale-[1.02]"
                   >
-                    <h3 className="text-xl font-semibold">{title}</h3>
-                    <p className="text-sm mt-1 opacity-90">
-                      {openCard === id ? "Click to close notebook" : "Click to preview notebook"}
+                    <h2 className="text-2xl font-semibold mb-2 text-[#81D8D0]">
+                      Monte Carlo Forecast
+                    </h2>
+                    <p className="text-slate-300 text-sm max-w-md mx-auto">
+                      Simulate ARR outcomes with stochastic growth and churn.
                     </p>
-
-                    {openCard === id && (
-                      <iframe
-                        src={src}
-                        className="w-full h-72 mt-4 rounded-xl transition-all duration-500"
-                        loading="lazy"
-                      />
-                    )}
-                  </div>
+                    <span className="mt-5 inline-block rounded-lg bg-[#81D8D0] text-black px-5 py-2.5 font-semibold hover:bg-[#6fcfc7]">
+                      Open Demo →
+                    </span>
+                  </Link>
                 </div>
-              ))}
-            </div>
-          </section>
 
-          <footer className="text-center text-xs text-gray-500 mt-20 pb-6">
-            © {new Date().getFullYear()} James Boggs | Powered by{" "}
-            <span className="text-indigo-400">Next.js</span>
-          </footer>
+                <div className="circuit-frame rounded-2xl">
+                  <Link
+                    href="/elasticity-simulator"
+                    className="circuit-inner block rounded-2xl p-6 md:p-8 text-center transition-transform hover:scale-[1.02]"
+                  >
+                    <h2 className="text-2xl font-semibold mb-2 text-[#81D8D0]">
+                      Elasticity Simulator
+                    </h2>
+                    <p className="text-slate-300 text-sm max-w-md mx-auto">
+                      Visualize how pricing moves affect demand and revenue.
+                    </p>
+                    <span className="mt-5 inline-block rounded-lg bg-[#81D8D0] text-black px-5 py-2.5 font-semibold hover:bg-[#6fcfc7]">
+                      Open Demo →
+                    </span>
+                  </Link>
+                </div>
+              </div>
+
+              <p className="mt-8 text-gray-300 w-full lg:w-3/4 mx-auto">
+                I build scalable ML systems, design SaaS pricing strategies, and create
+                financial models that align technology with business growth. Experience at
+                Kaseya (SaaS strategy, OCR automation) and Humanscale (treasury automation,
+                pricing elasticity).
+              </p>
+
+              {/* Stats */}
+              <div className="flex flex-wrap gap-12 mt-10 justify-center">
+                {[
+                  { value: "6+", label: "Years in Finance & Strategy" },
+                  { value: "10+", label: "ML/AI Projects Delivered" },
+                  { value: "100M+", label: "SaaS ARR Forecasted" },
+                ].map(({ value, label }) => (
+                  <div key={label} className="text-center">
+                    <p className="text-5xl font-semibold">{value}</p>
+                    <h3 className="text-sm text-gray-400 uppercase">{label}</h3>
+                  </div>
+                ))}
+              </div>
+            </header>
+
+            {/* Notebook Cards — centered grid, even borders */}
+            <section aria-label="Notebook Demos">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
+                {notebookCards.map(({ id, title, gradient, textColor, src }) => (
+                  <div
+                    key={id}
+                    onClick={() => setOpenCard(openCard === id ? null : id)}
+                    className="circuit-frame rounded-2xl cursor-pointer"
+                  >
+                    <div
+                      className={`circuit-inner rounded-2xl p-6 md:p-8 text-center bg-gradient-to-br ${gradient} ${textColor} transition-transform duration-300 hover:scale-[1.02]`}
+                    >
+                      <h3 className="text-xl font-semibold">{title}</h3>
+                      <p className="text-sm mt-1 opacity-90">
+                        {openCard === id ? "Click to close notebook" : "Click to preview notebook"}
+                      </p>
+
+                      {openCard === id && (
+                        <iframe
+                          src={src}
+                          className="w-full h-72 mt-4 rounded-xl transition-all duration-500"
+                          loading="lazy"
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <footer className="text-center text-xs text-gray-500 pb-6">
+              © {new Date().getFullYear()} James Boggs | Powered by{" "}
+              <span className="text-indigo-400">Next.js</span>
+            </footer>
+          </div>
         </section>
       </main>
     </div>
