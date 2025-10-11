@@ -21,7 +21,6 @@ export default function Home() {
       title: "Pricing & SaaS Analytics",
       gradient: "from-indigo-400 to-purple-600",
       textColor: "text-white",
-      hoverShadow: "hover:shadow-[0_25px_50px_rgba(79,70,229,0.4)]",
       src: "/notebooks/02_pricing_bandits_kaseya.html",
     },
     {
@@ -29,7 +28,6 @@ export default function Home() {
       title: "AI/ML Engineering (Python, PyTorch, NLP)",
       gradient: "from-green-400 to-emerald-600",
       textColor: "text-black",
-      hoverShadow: "hover:shadow-[0_25px_50px_rgba(16,185,129,0.3)]",
       src: "/notebooks/01_bayesian_ab_cuped_kaseya.html",
     },
     {
@@ -37,7 +35,6 @@ export default function Home() {
       title: "Financial Modeling & Treasury Strategy",
       gradient: "from-orange-400 to-red-500",
       textColor: "text-white",
-      hoverShadow: "hover:shadow-[0_25px_50px_rgba(255,87,34,0.4)]",
       src: "/notebooks/04_uplift_modeling_churn_kaseya.html",
     },
     {
@@ -45,7 +42,6 @@ export default function Home() {
       title: "Data Pipelines & Automation",
       gradient: "from-blue-400 to-cyan-500",
       textColor: "text-black",
-      hoverShadow: "hover:shadow-[0_25px_50px_rgba(59,130,246,0.3)]",
       src: "/notebooks/03_did_automation_humanscale.html",
     },
   ];
@@ -64,7 +60,8 @@ export default function Home() {
         {/* Sidebar with Profile */}
         <aside className="md:sticky md:top-0 md:h-screen md:w-1/2 lg:w-2/5 bg-white text-black p-8 md:rounded-r-3xl shadow-lg flex justify-center items-center">
           <div className="flex flex-col items-center text-center space-y-5">
-            <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-1">
+            {/* photo wrapped */}
+            <div className="relative rounded-2xl p-[2px] rainbow-border">
               <img
                 src="/profile.png"
                 alt="James Boggs Profile Picture"
@@ -72,12 +69,12 @@ export default function Home() {
                 loading="lazy"
               />
             </div>
-            <h2 className="text-2xl font-extrabold">James Boggs</h2>
+
+            <h2 className="text-2xl font-extrabold mt-4">James Boggs</h2>
             <p className="text-gray-600 max-w-xs">
               Finance & AI/ML Engineer | SaaS Pricing, Treasury Strategy, and ML Systems
             </p>
 
-            {/* Sidebar links */}
             <nav aria-label="Contact">
               <ul className="flex space-x-4 text-indigo-500 text-xl">
                 {socialLinks.map(({ href, label, icon: Icon }) => (
@@ -100,7 +97,7 @@ export default function Home() {
 
         {/* Main Content */}
         <section className="w-full md:w-1/2 lg:w-4/5 overflow-y-auto p-8 space-y-16">
-          {/* Hero Section */}
+          {/* Hero */}
           <header className="p-8 text-center sm:text-left">
             <h1 className="text-5xl lg:text-6xl font-extrabold leading-tight relative inline-block pb-6">
               FINANCE & AI/ML <br />
@@ -108,38 +105,43 @@ export default function Home() {
               <span className="absolute bottom-0 left-12 sm:left-0 w-40 h-1 bg-gradient-to-r from-indigo-500 to-purple-400 rounded-full"></span>
             </h1>
 
-            <PricingEngineShowcase />
+            {/* pricing demo wrapped */}
+            <div className="relative rounded-xl p-[2px] rainbow-border mt-8">
+              <div className="bg-slate-900 rounded-xl p-4">
+                <PricingEngineShowcase />
+              </div>
+            </div>
 
+            {/* simulators wrapped */}
             <div className="grid md:grid-cols-2 gap-6 mt-6">
-  <div className="relative rounded-xl p-[2px] rainbow-border">
-    <Link
-      href="/monte-carlo"
-      className="block bg-slate-900 rounded-xl p-6 transition-transform hover:scale-[1.02]"
-    >
-      <h2 className="text-xl font-semibold mb-2 text-tiffany">
-        Monte Carlo Forecast
-      </h2>
-      <p className="text-slate-300 text-sm">
-        Simulate ARR outcomes with stochastic growth and churn.
-      </p>
-    </Link>
-  </div>
+              <div className="relative rounded-xl p-[2px] rainbow-border">
+                <Link
+                  href="/monte-carlo"
+                  className="block bg-slate-900 rounded-xl p-6 transition-transform hover:scale-[1.02]"
+                >
+                  <h2 className="text-xl font-semibold mb-2 text-tiffany">
+                    Monte Carlo Forecast
+                  </h2>
+                  <p className="text-slate-300 text-sm">
+                    Simulate ARR outcomes with stochastic growth and churn.
+                  </p>
+                </Link>
+              </div>
 
-  <div className="relative rounded-xl p-[2px] rainbow-border">
-    <Link
-      href="/elasticity-simulator"
-      className="block bg-slate-900 rounded-xl p-6 transition-transform hover:scale-[1.02]"
-    >
-      <h2 className="text-xl font-semibold mb-2 text-tiffany">
-        Elasticity Simulator
-      </h2>
-      <p className="text-slate-300 text-sm">
-        Visualize how pricing moves affect demand and revenue.
-      </p>
-    </Link>
-  </div>
-</div>
-    
+              <div className="relative rounded-xl p-[2px] rainbow-border">
+                <Link
+                  href="/elasticity-simulator"
+                  className="block bg-slate-900 rounded-xl p-6 transition-transform hover:scale-[1.02]"
+                >
+                  <h2 className="text-xl font-semibold mb-2 text-tiffany">
+                    Elasticity Simulator
+                  </h2>
+                  <p className="text-slate-300 text-sm">
+                    Visualize how pricing moves affect demand and revenue.
+                  </p>
+                </Link>
+              </div>
+            </div>
 
             <p className="mt-6 text-gray-400 w-full lg:w-3/4">
               I build scalable ML systems, design SaaS pricing strategies, and create
@@ -163,43 +165,41 @@ export default function Home() {
             </div>
           </header>
 
-          {/* Embedded Notebooks Section */}
+          {/* Notebook Cards wrapped */}
           <section
             className="w-full xl:w-4/5 sm:pb-8 sm:pe-8"
             aria-label="Notebook Demos"
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 perspective-[1000px]">
-              {notebookCards.map(
-                ({ id, title, gradient, textColor, hoverShadow, src }) => (
+              {notebookCards.map(({ id, title, gradient, textColor, src }) => (
+                <div
+                  key={id}
+                  onClick={() => setOpenCard(openCard === id ? null : id)}
+                  className="relative rounded-xl p-[2px] rainbow-border cursor-pointer"
+                >
                   <div
-                    key={id}
-                    onClick={() => setOpenCard(openCard === id ? null : id)}
-                    className={`cursor-pointer group transition-transform duration-500 hover:rotate-x-[6deg] hover:rotate-y-[6deg] bg-gradient-to-br ${gradient} ${textColor} p-6 rounded-xl relative overflow-hidden backdrop-blur-md bg-opacity-60 border border-white/10 ${hoverShadow}`}
+                    className={`group bg-gradient-to-br ${gradient} ${textColor} p-6 rounded-xl relative overflow-hidden backdrop-blur-md bg-opacity-60 border border-white/10 transition-transform duration-500 hover:rotate-x-[6deg] hover:rotate-y-[6deg]`}
                   >
-                    <div className="absolute inset-0 opacity-10 bg-cover" />
-                    <div className="relative z-10">
-                      <h3 className="text-lg font-semibold leading-snug">{title}</h3>
-                      <p className="text-sm mt-1 opacity-80">
-                        {openCard === id
-                          ? "Click to close notebook"
-                          : "Click to preview notebook"}
-                      </p>
+                    <h3 className="text-lg font-semibold leading-snug">{title}</h3>
+                    <p className="text-sm mt-1 opacity-80">
+                      {openCard === id
+                        ? "Click to close notebook"
+                        : "Click to preview notebook"}
+                    </p>
 
-                      {openCard === id && (
-                        <iframe
-                          src={src}
-                          className="w-full h-72 mt-4 rounded-lg border border-white/20 transition-all duration-500 shadow-[0_0_20px_rgba(129,216,208,0.35)]"
-                          loading="lazy"
-                        />
-                      )}
-                    </div>
+                    {openCard === id && (
+                      <iframe
+                        src={src}
+                        className="w-full h-72 mt-4 rounded-lg border border-white/20 transition-all duration-500"
+                        loading="lazy"
+                      />
+                    )}
                   </div>
-                )
-              )}
+                </div>
+              ))}
             </div>
           </section>
 
-          {/* Footer */}
           <footer className="text-center text-xs text-gray-500 mt-20 pb-6">
             © {new Date().getFullYear()} James Boggs | Powered by{" "}
             <span className="text-indigo-400">Next.js</span>
