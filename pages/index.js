@@ -5,11 +5,7 @@ import { useState } from "react";
 import PricingEngineShowcase from "./components/PricingEngineShowcase";
 
 const socialLinks = [
-  {
-    href: "mailto:jboggs.econ@gmail.com",
-    label: "Email",
-    icon: FaEnvelope,
-  },
+  { href: "mailto:jboggs.econ@gmail.com", label: "Email", icon: FaEnvelope },
 ];
 
 export default function Home() {
@@ -57,10 +53,9 @@ export default function Home() {
       </Head>
 
       <main className="flex flex-col md:flex-row">
-        {/* Sidebar with Profile */}
+        {/* Sidebar */}
         <aside className="md:sticky md:top-0 md:h-screen md:w-1/2 lg:w-2/5 bg-white text-black p-8 md:rounded-r-3xl shadow-lg flex justify-center items-center">
           <div className="flex flex-col items-center text-center space-y-5">
-            {/* photo wrapped */}
             <div className="relative rounded-2xl p-[2px] rainbow-border">
               <img
                 src="/profile.png"
@@ -98,65 +93,64 @@ export default function Home() {
         {/* Main Content */}
         <section className="w-full md:w-1/2 lg:w-4/5 overflow-y-auto p-8 space-y-16">
           {/* Hero */}
-          <header className="p-8 text-center sm:text-left">
-            <h1 className="text-5xl lg:text-6xl font-extrabold leading-tight relative inline-block">
+          <header className="p-8 text-center">
+            <h1 className="text-5xl lg:text-6xl font-extrabold leading-tight inline-block">
               FINANCE & AI/ML <br />
               <span className="text-[#81D8D0] font-extrabold">ENGINEER</span>
             </h1>
 
-            {/* electric circuit divider under hero */}
-            <div className="mt-4">
-              <div className="inline-block rounded-full p-[2px] rainbow-border">
-                <div className="h-1 w-40 bg-black rounded-full" />
-              </div>
+            {/* full-width electric circuit divider */}
+            <div className="my-6">
+              <div className="rainbow-hr w-full" />
             </div>
 
-            {/* pricing demo wrapped — tighter & darker with header color overrides */}
-            <div className="relative rounded-xl p-[2px] rainbow-border mt-8">
-              <div className="bg-slate-900 rounded-xl p-3 md:p-4 max-w-5xl mx-auto overflow-hidden
-                              [&_h1]:text-slate-100 [&_h2]:text-slate-100 [&_h3]:text-slate-200 [&_th]:text-slate-100 [&_label]:text-slate-200">
+            {/* Pricing demo — tighter, centered, readable headers */}
+            <div className="relative rounded-2xl p-[2px] rainbow-border mt-6">
+              <div className="bg-slate-900 rounded-2xl p-4 md:p-6 lg:p-8 max-w-5xl mx-auto overflow-hidden
+                              [&_h1]:text-slate-100 [&_h2]:text-slate-100 [&_h3]:text-slate-100
+                              [&_th]:text-slate-100 [&_label]:text-slate-200">
                 <PricingEngineShowcase />
               </div>
             </div>
 
-            {/* simulators wrapped + clear CTA buttons */}
-            <div className="grid md:grid-cols-2 gap-6 mt-6">
-              <div className="relative rounded-xl p-[2px] rainbow-border">
+            {/* Simulators — even borders + centered text + clear CTAs */}
+            <div className="grid md:grid-cols-2 gap-6 mt-8">
+              <div className="relative rounded-2xl p-[2px] rainbow-border">
                 <Link
                   href="/monte-carlo"
-                  className="block bg-slate-900 rounded-xl p-6 transition-transform hover:scale-[1.02]"
+                  className="block bg-slate-900 rounded-2xl p-6 md:p-8 text-center transition-transform hover:scale-[1.02]"
                 >
-                  <h2 className="text-xl font-semibold mb-2 text-[#81D8D0]">
+                  <h2 className="text-2xl font-semibold mb-2 text-[#81D8D0]">
                     Monte Carlo Forecast
                   </h2>
-                  <p className="text-slate-300 text-sm">
+                  <p className="text-slate-300 text-sm max-w-md mx-auto">
                     Simulate ARR outcomes with stochastic growth and churn.
                   </p>
-                  <span className="mt-4 inline-block rounded-lg bg-[#81D8D0] text-black px-4 py-2 font-semibold hover:bg-[#6fcfc7]">
+                  <span className="mt-5 inline-block rounded-lg bg-[#81D8D0] text-black px-5 py-2.5 font-semibold hover:bg-[#6fcfc7]">
                     Open Demo →
                   </span>
                 </Link>
               </div>
 
-              <div className="relative rounded-xl p-[2px] rainbow-border">
+              <div className="relative rounded-2xl p-[2px] rainbow-border">
                 <Link
                   href="/elasticity-simulator"
-                  className="block bg-slate-900 rounded-xl p-6 transition-transform hover:scale-[1.02]"
+                  className="block bg-slate-900 rounded-2xl p-6 md:p-8 text-center transition-transform hover:scale-[1.02]"
                 >
-                  <h2 className="text-xl font-semibold mb-2 text-[#81D8D0]">
+                  <h2 className="text-2xl font-semibold mb-2 text-[#81D8D0]">
                     Elasticity Simulator
                   </h2>
-                  <p className="text-slate-300 text-sm">
+                  <p className="text-slate-300 text-sm max-w-md mx-auto">
                     Visualize how pricing moves affect demand and revenue.
                   </p>
-                  <span className="mt-4 inline-block rounded-lg bg-[#81D8D0] text-black px-4 py-2 font-semibold hover:bg-[#6fcfc7]">
+                  <span className="mt-5 inline-block rounded-lg bg-[#81D8D0] text-black px-5 py-2.5 font-semibold hover:bg-[#6fcfc7]">
                     Open Demo →
                   </span>
                 </Link>
               </div>
             </div>
 
-            <p className="mt-6 text-gray-300 w-full lg:w-3/4">
+            <p className="mt-8 text-gray-300 w-full lg:w-3/4 mx-auto">
               I build scalable ML systems, design SaaS pricing strategies, and create
               financial models that align technology with business growth. Experience at
               Kaseya (SaaS strategy, OCR automation) and Humanscale (treasury automation,
@@ -164,13 +158,13 @@ export default function Home() {
             </p>
 
             {/* Stats */}
-            <div className="flex flex-wrap gap-12 mt-10 justify-center lg:justify-start">
+            <div className="flex flex-wrap gap-12 mt-10 justify-center">
               {[
                 { value: "6+", label: "Years in Finance & Strategy" },
                 { value: "10+", label: "ML/AI Projects Delivered" },
                 { value: "100M+", label: "SaaS ARR Forecasted" },
               ].map(({ value, label }) => (
-                <div key={label}>
+                <div key={label} className="text-center">
                   <p className="text-5xl font-semibold">{value}</p>
                   <h3 className="text-sm text-gray-400 uppercase">{label}</h3>
                 </div>
@@ -178,32 +172,27 @@ export default function Home() {
             </div>
           </header>
 
-          {/* Notebook Cards wrapped */}
-          <section
-            className="w-full xl:w-4/5 sm:pb-8 sm:pe-8"
-            aria-label="Notebook Demos"
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 perspective-[1000px]">
+          {/* Notebook Cards — even borders, centered text, no 3D warp */}
+          <section className="w-full xl:w-4/5 sm:pb-8 sm:pe-8" aria-label="Notebook Demos">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {notebookCards.map(({ id, title, gradient, textColor, src }) => (
                 <div
                   key={id}
                   onClick={() => setOpenCard(openCard === id ? null : id)}
-                  className="relative rounded-xl p-[2px] rainbow-border cursor-pointer"
+                  className="relative rounded-2xl p-[2px] rainbow-border cursor-pointer"
                 >
                   <div
-                    className={`group bg-gradient-to-br ${gradient} ${textColor} p-6 rounded-xl relative overflow-hidden backdrop-blur-md bg-opacity-60 border border-white/10 transition-transform duration-500 hover:rotate-x-[6deg] hover:rotate-y-[6deg]`}
+                    className={`bg-gradient-to-br ${gradient} ${textColor} p-6 md:p-8 rounded-2xl text-center transition-transform duration-300 hover:scale-[1.02]`}
                   >
-                    <h3 className="text-lg font-semibold leading-snug">{title}</h3>
+                    <h3 className="text-xl font-semibold">{title}</h3>
                     <p className="text-sm mt-1 opacity-90">
-                      {openCard === id
-                        ? "Click to close notebook"
-                        : "Click to preview notebook"}
+                      {openCard === id ? "Click to close notebook" : "Click to preview notebook"}
                     </p>
 
                     {openCard === id && (
                       <iframe
                         src={src}
-                        className="w-full h-72 mt-4 rounded-lg border border-white/20 transition-all duration-500"
+                        className="w-full h-72 mt-4 rounded-xl transition-all duration-500"
                         loading="lazy"
                       />
                     )}
