@@ -60,25 +60,28 @@ html, body { @apply min-h-screen bg-black text-white font-poppins; }
 }
 
 
-/* ===== Even animated border via mask (no “thicker bottom”) ===== */
+/* ========== Rock-solid gradient border (no pseudo-element) ========== */
 .circuit-frame {
-  position: relative;
+  /* border thickness — tweak 1px / 1.5px / 2px to taste */
+  padding: 1.5px;
   border-radius: 1rem; /* 2xl */
-}
-.circuit-frame::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  padding: 1.5px;      /* border thickness — tweak to 1px or 2px as you like */
-  border-radius: inherit;
   background: var(--rgb-grad);
   background-size: 400% 400%;
-  animation: rainbow 14s linear infinite, pulseGlow 6s ease-in-out infinite;
-  /* draw only the border using masks */
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
+  animation: rainbow 14s linear infinite; /* add pulse with .pulse variant below */
 }
+
+/* Optional breathing effect for frames too */
+.circuit-frame.pulse {
+  animation: rainbow 14s linear infinite, pulseGlow 6s ease-in-out infinite;
+}
+
+/* Inner panel — use background-color (not "background") so gradients on inner still show */
+.circuit-inner {
+  display: block;
+  border-radius: inherit;
+  background-color: #0f172a; /* slate-900 */
+}
+
 
 /* Inner panel background that sits inside circuit-frame */
 .circuit-inner {
