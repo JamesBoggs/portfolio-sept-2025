@@ -43,23 +43,22 @@ html, body { @apply min-h-screen bg-black text-white font-poppins; }
   );
 }
 
-/* ===== Thin full-width circuit trace (divider) ===== */
+/* Rock-solid circuit trace (no pseudo-element) */
 .circuit-trace {
-  position: relative;
-  height: 2px;          /* set to 1px if you want even thinner */
+  height: 2px;                /* set 1px if you want hairline */
   width: 100%;
   border-radius: 9999px;
-  overflow: hidden;
+  background: var(--rgb-grad);
+  background-size: 400% 100%;
+  animation: rainbow 14s linear infinite;  /* optional: add pulse below if you want a breathing glow */
   filter: drop-shadow(0 0 8px rgba(129,216,208,0.35));
 }
-.circuit-trace::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--rgb-grad);
-  background-size: 400% 400%;
+
+/* Optional: add subtle breathing to the line too */
+.circuit-trace.pulse {
   animation: rainbow 14s linear infinite, pulseGlow 6s ease-in-out infinite;
 }
+
 
 /* ===== Even animated border via mask (no “thicker bottom”) ===== */
 .circuit-frame {
