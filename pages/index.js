@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
-import { FaEnvelope, FaBook } from "react-icons/fa";
+import { FaEnvelope } from "react-icons/fa";
+import { useState } from "react";
 import PricingEngineShowcase from "./components/PricingEngineShowcase";
 
 const socialLinks = [
@@ -9,41 +10,46 @@ const socialLinks = [
     label: "Email",
     icon: FaEnvelope,
   },
-  {
-    href: "/notebooks",
-    label: "Notebooks",
-    icon: FaBook,
-  },
-];
-
-const serviceCard = [
-  {
-    title: "Pricing & SaaS Analytics",
-    gradient: "from-indigo-400 to-purple-600",
-    textColor: "text-white",
-    hoverShadow: "hover:shadow-[0_25px_50px_rgba(79,70,229,0.4)]",
-  },
-  {
-    title: "AI/ML Engineering (Python, PyTorch, NLP)",
-    gradient: "from-green-400 to-emerald-600",
-    textColor: "text-black",
-    hoverShadow: "hover:shadow-[0_25px_50px_rgba(16,185,129,0.3)]",
-  },
-  {
-    title: "Financial Modeling & Treasury Strategy",
-    gradient: "from-orange-400 to-red-500",
-    textColor: "text-white",
-    hoverShadow: "hover:shadow-[0_25px_50px_rgba(255,87,34,0.4)]",
-  },
-  {
-    title: "Data Pipelines & Automation",
-    gradient: "from-blue-400 to-cyan-500",
-    textColor: "text-black",
-    hoverShadow: "hover:shadow-[0_25px_50px_rgba(59,130,246,0.3)]",
-  },
 ];
 
 export default function Home() {
+  const [openCard, setOpenCard] = useState(null);
+
+  const notebookCards = [
+    {
+      id: "pricing",
+      title: "Pricing & SaaS Analytics",
+      gradient: "from-indigo-400 to-purple-600",
+      textColor: "text-white",
+      hoverShadow: "hover:shadow-[0_25px_50px_rgba(79,70,229,0.4)]",
+      src: "/notebooks/02_pricing_bandits_kaseya.html",
+    },
+    {
+      id: "ml",
+      title: "AI/ML Engineering (Python, PyTorch, NLP)",
+      gradient: "from-green-400 to-emerald-600",
+      textColor: "text-black",
+      hoverShadow: "hover:shadow-[0_25px_50px_rgba(16,185,129,0.3)]",
+      src: "/notebooks/01_bayesian_ab_cuped_kaseya.html",
+    },
+    {
+      id: "finance",
+      title: "Financial Modeling & Treasury Strategy",
+      gradient: "from-orange-400 to-red-500",
+      textColor: "text-white",
+      hoverShadow: "hover:shadow-[0_25px_50px_rgba(255,87,34,0.4)]",
+      src: "/notebooks/04_uplift_modeling_churn_kaseya.html",
+    },
+    {
+      id: "data",
+      title: "Data Pipelines & Automation",
+      gradient: "from-blue-400 to-cyan-500",
+      textColor: "text-black",
+      hoverShadow: "hover:shadow-[0_25px_50px_rgba(59,130,246,0.3)]",
+      src: "/notebooks/03_did_automation_humanscale.html",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-black text-white font-poppins">
       <Head>
@@ -71,26 +77,22 @@ export default function Home() {
               Finance & AI/ML Engineer | SaaS Pricing, Treasury Strategy, and ML Systems
             </p>
 
-            {/* Sidebar links (Email + Notebooks) */}
+            {/* Sidebar links */}
             <nav aria-label="Contact">
               <ul className="flex space-x-4 text-indigo-500 text-xl">
-                {socialLinks.map(({ href, label, icon: Icon }) => {
-                  const isInternal = href.startsWith("/");
-                  return (
-                    <li key={label}>
-                      <Link
-                        href={href}
-                        aria-label={label}
-                        className="transition-transform hover:scale-150"
-                        {...(!isInternal
-                          ? { target: "_blank", rel: "noopener noreferrer" }
-                          : {})}
-                      >
-                        <Icon />
-                      </Link>
-                    </li>
-                  );
-                })}
+                {socialLinks.map(({ href, label, icon: Icon }) => (
+                  <li key={label}>
+                    <Link
+                      href={href}
+                      aria-label={label}
+                      className="transition-transform hover:scale-150"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Icon />
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </nav>
           </div>
@@ -105,25 +107,34 @@ export default function Home() {
               <span className="text-[#6a6a6a] font-extrabold">ENGINEER</span>
               <span className="absolute bottom-0 left-12 sm:left-0 w-40 h-1 bg-gradient-to-r from-indigo-500 to-purple-400 rounded-full"></span>
             </h1>
-           <PricingEngineShowcase />
 
-<div className="grid md:grid-cols-2 gap-6 mt-6">
-  <Link href="/monte-carlo" className="card">
-    <h2 className="text-xl font-semibold mb-2 text-tiffany">Monte Carlo Forecast</h2>
-    <p className="text-slate-300 text-sm">Simulate ARR outcomes…</p>
-  </Link>
+            <PricingEngineShowcase />
 
-  <Link href="/elasticity-simulator" className="card">
-    <h2 className="text-xl font-semibold mb-2 text-tiffany">Elasticity Simulator</h2>
-    <p className="text-slate-300 text-sm">Visualize how pricing moves…</p>
-  </Link>
-</div>
+            <div className="grid md:grid-cols-2 gap-6 mt-6">
+              <Link href="/monte-carlo" className="card">
+                <h2 className="text-xl font-semibold mb-2 text-tiffany">
+                  Monte Carlo Forecast
+                </h2>
+                <p className="text-slate-300 text-sm">
+                  Simulate ARR outcomes with stochastic growth and churn.
+                </p>
+              </Link>
 
-          <p className="mt-6 text-gray-400 w-full lg:w-3/4">
-              I build scalable ML systems, design SaaS pricing strategies, and
-              create financial models that align technology with business growth.
-              Experience at Kaseya (SaaS strategy, OCR automation) and Humanscale
-              (treasury automation, pricing elasticity).
+              <Link href="/elasticity-simulator" className="card">
+                <h2 className="text-xl font-semibold mb-2 text-tiffany">
+                  Elasticity Simulator
+                </h2>
+                <p className="text-slate-300 text-sm">
+                  Visualize how pricing moves affect demand and revenue.
+                </p>
+              </Link>
+            </div>
+
+            <p className="mt-6 text-gray-400 w-full lg:w-3/4">
+              I build scalable ML systems, design SaaS pricing strategies, and create
+              financial models that align technology with business growth. Experience at
+              Kaseya (SaaS strategy, OCR automation) and Humanscale (treasury automation,
+              pricing elasticity).
             </p>
 
             {/* Stats */}
@@ -139,42 +150,46 @@ export default function Home() {
                 </div>
               ))}
             </div>
-
-            {/* CTA Button to Notebooks */}
-            <div className="mt-12 text-center lg:text-left">
-              <Link
-                href="/notebooks"
-                className="inline-block px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-500 transition"
-              >
-                View My Notebooks →
-              </Link>
-            </div>
           </header>
 
-          {/* Services Cards */}
+          {/* Embedded Notebooks Section */}
           <section
             className="w-full xl:w-4/5 sm:pb-8 sm:pe-8"
-            aria-label="Service Highlights"
+            aria-label="Notebook Demos"
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 perspective-[1000px]">
-              {serviceCard.map(({ title, gradient, textColor, hoverShadow }, index) => (
-                <div
-                  key={index}
-                  className={`group [transform-style:preserve-3d] transition-transform duration-500 hover:rotate-x-[6deg] hover:rotate-y-[6deg] bg-gradient-to-br ${gradient} ${textColor} p-6 rounded-xl relative overflow-hidden backdrop-blur-md bg-opacity-60 border border-white/10 ${hoverShadow}`}
-                >
-                  <div className="absolute inset-0 opacity-10 bg-cover" />
-                  <div className="relative z-10">
-                    <h3 className="text-lg font-semibold leading-snug">
-                      {title}
-                    </h3>
+              {notebookCards.map(
+                ({ id, title, gradient, textColor, hoverShadow, src }) => (
+                  <div
+                    key={id}
+                    onClick={() => setOpenCard(openCard === id ? null : id)}
+                    className={`cursor-pointer group transition-transform duration-500 hover:rotate-x-[6deg] hover:rotate-y-[6deg] bg-gradient-to-br ${gradient} ${textColor} p-6 rounded-xl relative overflow-hidden backdrop-blur-md bg-opacity-60 border border-white/10 ${hoverShadow}`}
+                  >
+                    <div className="absolute inset-0 opacity-10 bg-cover" />
+                    <div className="relative z-10">
+                      <h3 className="text-lg font-semibold leading-snug">{title}</h3>
+                      <p className="text-sm mt-1 opacity-80">
+                        {openCard === id
+                          ? "Click to close notebook"
+                          : "Click to preview notebook"}
+                      </p>
+
+                      {openCard === id && (
+                        <iframe
+                          src={src}
+                          className="w-full h-72 mt-4 rounded-lg border border-white/20 transition-all duration-500 shadow-[0_0_20px_rgba(129,216,208,0.35)]"
+                          loading="lazy"
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </section>
 
           {/* Footer */}
-          <footer className="text-center text-xs text-gray-500">
+          <footer className="text-center text-xs text-gray-500 mt-20 pb-6">
             © {new Date().getFullYear()} James Boggs | Powered by{" "}
             <span className="text-indigo-400">Next.js</span>
           </footer>
