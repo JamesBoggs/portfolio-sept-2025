@@ -1,26 +1,29 @@
 export default async function handler(req, res) {
+  if (req.method !== "GET" && req.method !== "POST") {
+    return res.status(405).json({ detail: "Method Not Allowed" });
+  }
+
   try {
-    const response = await fetch("https://montecarlo-fastapi.onrender.com/montecarlo", {
+    const response = await fetch("http://localhost:8000/simulate", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      }
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        trials: 10000,
+        mu: 0.05,
+        sigma: 0.2,
+      }),
     });
 
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`Bad response: ${response.status} – ${err}`);
-    }
-
     const data = await response.json();
-    res.status(200).json(data);
-  } catch (err) {
-    console.error("Monte Carlo API error:", err);
-    res.status(500).json({
+
+    return res.status(200).json({
       model: "montecarlo-v1.0.0",
-      status: "offline",
-      lastUpdated: "2025-10-11",
-      data: { error: "API call failed.", details: err.message }
+      ...data,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: "API call failed.",
+      details: err.message,
     });
   }
 }
