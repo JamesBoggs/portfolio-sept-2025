@@ -13,53 +13,57 @@ export default function Home() {
   const [openCard, setOpenCard] = useState(null);
   const [models, setModels] = useState([]);
 
-  useEffect(() => {
-    async function load() {
-      const endpoints = [
-        "elasticity",
-        "price-engine",
-        "montecarlo",
-        "forecast",
-        "rl-pricing",
-        "sentiment",
-        "volatility",
-      ];
+useEffect(() => {
+  async function load() {
+    const endpoints = [
+      "elasticity",
+      "price-engine",
+      "montecarlo",
+      "forecast",
+      "rl-pricing",
+      "sentiment",
+      "volatility",
+    ];
 
-      const responses = await Promise.all(
-        endpoints.map(async (name) => {
-          try {
-            const res = await fetch(`/api/${name}`);
-            const data = await res.json();
+    const responses = await Promise.all(
+      endpoints.map(async (name) => {
+        try {
+          const res = await fetch(`/api/${name}`);
+          const data = await res.json();
 
-            return {
-              model: data.model || name,
-              status: "online",
-              lastUpdated: new Date().toLocaleString(),
-              data,
-              chartData: [
-                { x: "W1", y: Math.random() * 100 },
-                { x: "W2", y: Math.random() * 100 },
-                { x: "W3", y: Math.random() * 100 },
-                { x: "W4", y: Math.random() * 100 },
-              ],
-            };
-          } catch (err) {
-            return {
-              model: name,
-              status: "offline",
-              lastUpdated: new Date().toLocaleString(),
-              data: { error: "API failed" },
-              chartData: [],
-            };
-          }
-        })
-      );
+          // Check for actual backend success
+          const isOnline = res.ok && data?.status === "online";
 
-      setModels(responses);
-    }
+          return {
+            model: data?.model || name,
+            status: isOnline ? "online" : "offline",
+            lastUpdated: data?.lastUpdated || "N/A",
+            data: data?.data || { error: "API failed or returned bad data" },
+            chartData: [
+              { x: "W1", y: Math.random() * 100 },
+              { x: "W2", y: Math.random() * 100 },
+              { x: "W3", y: Math.random() * 100 },
+              { x: "W4", y: Math.random() * 100 },
+            ],
+          };
+        } catch (error) {
+          // Handle fetch or JSON parsing error
+          return {
+            model: name,
+            status: "offline",
+            lastUpdated: "N/A",
+            data: { error: "Fetch failed" },
+            chartData: [],
+          };
+        }
+      })
+    );
 
-    load();
-  }, []);
+    setModels(responses);
+  }
+
+  load();
+}, []);
 
   const notebookCards = [
     {
