@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   LineChart,
   Line,
@@ -12,6 +12,7 @@ import {
 export default function Home() {
   const [models, setModels] = useState([]);
   const [expanded, setExpanded] = useState(null);
+  const cardsRef = useRef([]);
 
   useEffect(() => {
     async function load() {
@@ -47,7 +48,7 @@ export default function Home() {
               model: data?.model || name,
               status: isOnline ? "online" : "offline",
               latency,
-              uptime: (Math.random() * 1 + 99).toFixed(2), // mock %
+              uptime: (Math.random() * 1 + 99).toFixed(2),
               version: "v1.0.0",
               framework: "PyTorch 2.6.0+cu124",
               lastUpdated: data?.lastUpdated || new Date().toLocaleString(),
@@ -78,6 +79,22 @@ export default function Home() {
 
     load();
   }, []);
+
+  // Optional: collapse if clicking outside any card
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        expanded !== null &&
+        cardsRef.current[expanded] &&
+        !cardsRef.current[expanded].contains(event.target)
+      ) {
+        setExpanded(null);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [expanded]);
 
   const shimmerCards = new Array(7).fill(null).map((_, i) => (
     <div key={i} className="circuit-frame rounded-2xl animate-pulse">
@@ -138,12 +155,11 @@ export default function Home() {
               : models.map((m, i) => (
                   <div
                     key={i}
+                    ref={(el) => (cardsRef.current[i] = el)}
                     className="circuit-frame rounded-2xl hover:scale-[1.01] transition-transform"
                   >
                     <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 backdrop-blur-sm">
-                      <h2 className="text-lg font-bold text-[#81D8D0] mb-1">
-                        {m.model}
-                      </h2>
+                      <h2 className="text-lg font-bold text-[#81D8D0] mb-1">{m.model}</h2>
 
                       {/* Status + metrics */}
                       <div className="flex items-center gap-2 text-sm mb-2">
@@ -182,41 +198,15 @@ export default function Home() {
                         {JSON.stringify(m.data, null, 2)}
                       </pre>
 
-                      {/* Hidden Jupyter + Repo buttons for now */}
-                      {/*
-                      <div className="flex flex-col sm:flex-row gap-2 mt-4">
-                        <a
-                          href="#"
-                          className="flex-1 text-center px-3 py-2 rounded-md bg-slate-800/70 hover:bg-slate-700 transition-all text-sm"
-                        >
-                          View Notebook 🔥
-                        </a>
-                        <a
-                          href="#"
-                          className="flex-1 text-center px-3 py-2 rounded-md bg-slate-800/70 hover:bg-slate-700 transition-all text-sm"
-                        >
-                          View Repo 🐙
-                        </a>
-                      </div>
-                      */}
-
-                      {/* Stack Badges */}
+                      {/* Badges */}
                       <div className="flex flex-wrap gap-2 text-[10px] text-gray-400 mt-3">
-                        <span className="px-2 py-1 rounded bg-slate-800/60">
-                          🧠 PyTorch
-                        </span>
-                        <span className="px-2 py-1 rounded bg-slate-800/60">
-                          ⚡ FastAPI
-                        </span>
-                        <span className="px-2 py-1 rounded bg-slate-800/60">
-                          ☁️ Render
-                        </span>
-                        <span className="px-2 py-1 rounded bg-slate-800/60">
-                          🔒 HTTPS Live
-                        </span>
+                        <span className="px-2 py-1 rounded bg-slate-800/60">🧠 PyTorch</span>
+                        <span className="px-2 py-1 rounded bg-slate-800/60">⚡ FastAPI</span>
+                        <span className="px-2 py-1 rounded bg-slate-800/60">☁️ Render</span>
+                        <span className="px-2 py-1 rounded bg-slate-800/60">🔒 HTTPS Live</span>
                       </div>
 
-                      {/* Expandable Model Info */}
+                      {/* Expand / Collapse Button */}
                       <button
                         onClick={() =>
                           setExpanded(expanded === i ? null : i)
@@ -225,15 +215,17 @@ export default function Home() {
                       >
                         {expanded === i ? "Hide Model Card ▲" : "View Model Card ▼"}
                       </button>
-                      {expanded === i && (
-                        <div className="text-xs bg-black/30 mt-2 p-3 rounded-md space-y-1 text-gray-300">
+
+                      {/* Animated Expand Section */}
+                      <div className={`model-card-expand ${expanded === i ? "active" : ""}`}>
+                        <div className="text-xs bg-slate-800/40 mt-2 p-3 rounded-md space-y-1 text-gray-300 backdrop-blur-sm">
                           <p>Architecture: GRU → Dense(64→1)</p>
                           <p>Training Data: Synthetic + Historical Signals</p>
                           <p>Loss: MSE • Optimizer: AdamW</p>
                           <p>Deployment: Docker + FastAPI on Render</p>
                           <p>Last Retrain: Oct 10, 2025</p>
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 ))}
