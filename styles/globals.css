@@ -201,3 +201,34 @@ pre::-webkit-scrollbar-thumb {
   background: rgba(129,216,208,0.3);
   border-radius: 2px;
 }
+
+/* ===== Expandable Model Card (stable, animated) ===== */
+.model-card-expand {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.model-card-expand.active {
+  max-height: 200px;
+  opacity: 1;
+}
+
+/* ===== Optional inner styling for frosted model info ===== */
+.model-card-expand .glass-inner {
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(8px);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* ===== Teaser line for collapsed state ===== */
+.model-card-expand .teaser {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 0.5rem;
+  font-style: italic;
+  opacity: 0.8;
+}
