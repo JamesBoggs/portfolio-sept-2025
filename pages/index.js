@@ -1,13 +1,8 @@
 import Head from "next/head";
-import Link from "next/link";
-import { FaEnvelope } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import PricingEngineShowcase from "./components/PricingEngineShowcase";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-;
 
 export default function Home() {
-  const [openCard, setOpenCard] = useState(null);
   const [models, setModels] = useState([]);
 
   useEffect(() => {
@@ -69,33 +64,6 @@ export default function Home() {
     load();
   }, []);
 
-  const notebookCards = [
-    {
-      id: "pricing",
-      title: "Pricing & SaaS Analytics",
-      gradient: "from-indigo-400 to-purple-600",
-      src: "/notebooks/02_pricing_bandits_kaseya.html",
-    },
-    {
-      id: "ml",
-      title: "AI/ML Engineering (Python, PyTorch, NLP)",
-      gradient: "from-green-400 to-emerald-600",
-      src: "/notebooks/01_bayesian_ab_cuped_kaseya.html",
-    },
-    {
-      id: "finance",
-      title: "Financial Modeling & Treasury Strategy",
-      gradient: "from-orange-400 to-red-500",
-      src: "/notebooks/04_uplift_modeling_churn_kaseya.html",
-    },
-    {
-      id: "data",
-      title: "Data Pipelines & Automation",
-      gradient: "from-blue-400 to-cyan-500",
-      src: "/notebooks/03_did_automation_humanscale.html",
-    },
-  ];
-
   const shimmerCards = new Array(7).fill(null).map((_, i) => (
     <div key={i} className="circuit-frame rounded-2xl animate-pulse">
       <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-slate-700/30 to-slate-900/20">
@@ -112,107 +80,70 @@ export default function Home() {
   ));
 
   return (
-    <div className="min-h-screen bg-black text-white font-poppins">
+    <div className="min-h-screen bg-black text-white font-poppins flex flex-col items-center justify-center px-4 py-10">
       <Head>
-        <title>James Boggs – Portfolio</title>
+        <title>James Boggs – Quant Dashboard</title>
         <meta
           name="description"
-          content="Portfolio of James Boggs – Finance & AI/ML Engineer specializing in SaaS pricing, analytics, and ML pipelines."
+          content="Live Quant Dashboard by James Boggs – Finance & AI/ML Engineer"
         />
       </Head>
 
-      <main className="flex flex-col md:flex-row">
-        <aside className="md:sticky md:top-0 md:h-screen md:w-1/2 lg:w-2/5 bg-white text-black p-6 flex justify-center items-center shadow-lg">
-          <div className="flex flex-col items-center text-center space-y-5">
-            <div className="circuit-frame rounded-2xl">
-              <div className="circuit-inner rounded-2xl p-1">
-                <img src="/profile.png" alt="James Boggs Profile" className="w-72 h-80 object-cover rounded-2xl" />
-              </div>
-            </div>
-            <h2 className="text-2xl font-extrabold mt-4">James Boggs</h2>
-            <p className="text-gray-600 max-w-xs">
-              Finance & AI/ML Engineer | SaaS Pricing, Treasury Strategy, ML Systems
-            </p>
-            <nav>
-              <ul className="flex space-x-4 text-indigo-500 text-xl">
-                {socialLinks.map(({ href, label, icon: Icon }) => (
-                  <li key={label}>
-                    <Link href={href} aria-label={label} className="hover:scale-150 transition-transform" target="_blank" rel="noopener noreferrer">
-                      <Icon />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-        </aside>
+      <header className="text-center mb-10">
+        <h1 className="text-5xl lg:text-6xl font-extrabold">
+          LIVE <span className="text-[#81D8D0]">QUANT DASHBOARD</span>
+        </h1>
+        <div className="circuit-trace w-full my-4" />
+      </header>
 
-        <section className="w-full md:w-1/2 lg:w-4/5 overflow-y-auto px-4 py-8 space-y-16">
-          <header className="text-center space-y-4">
-            <h1 className="text-5xl lg:text-6xl font-extrabold">
-              FINANCE & AI/ML <br /><span className="text-[#81D8D0]">ENGINEER</span>
-            </h1>
-            <div className="circuit-trace w-full my-4" />
-          </header>
-
-          <section>
-            <h2 className="text-2xl font-bold text-[#81D8D0] text-center mb-4">
-              Live Quant Dashboard
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {models.length === 0
-                ? shimmerCards
-                : models.map((m, i) => (
-                    <div key={i} className="circuit-frame rounded-2xl">
-                      <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20">
-                        <h2 className="text-lg font-bold text-[#81D8D0] mb-1">{m.model}</h2>
-                        <div className="flex items-center gap-2 text-sm mb-2">
-                          <span className={`inline-block w-3 h-3 rounded-full ${m.status === "online" ? "bg-green-500" : "bg-red-500"}`}></span>
-                          <span>{m.status.charAt(0).toUpperCase() + m.status.slice(1)}</span>
-                        </div>
-                        <p className="text-xs text-gray-400 mb-2">Last Updated: {m.lastUpdated}</p>
-                        <ResponsiveContainer width="100%" height={100}>
-                          <LineChart data={m.chartData}>
-                            <Line type="monotone" dataKey="y" stroke="#81D8D0" strokeWidth={2} dot={false} />
-                            <XAxis dataKey="x" hide />
-                            <YAxis hide />
-                            <Tooltip />
-                          </LineChart>
-                        </ResponsiveContainer>
-                        <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-32">
-                          {JSON.stringify(m.data, null, 2)}
-                        </pre>
-                      </div>
+      <section className="w-full max-w-6xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {models.length === 0
+            ? shimmerCards
+            : models.map((m, i) => (
+                <div key={i} className="circuit-frame rounded-2xl">
+                  <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20">
+                    <h2 className="text-lg font-bold text-[#81D8D0] mb-1">{m.model}</h2>
+                    <div className="flex items-center gap-2 text-sm mb-2">
+                      <span
+                        className={`inline-block w-3 h-3 rounded-full ${
+                          m.status === "online" ? "bg-green-500" : "bg-red-500"
+                        }`}
+                      ></span>
+                      <span>
+                        {m.status.charAt(0).toUpperCase() + m.status.slice(1)}
+                      </span>
                     </div>
-                  ))}
-            </div>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-[#81D8D0] text-center">
-              Notebook Case Studies
-            </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {notebookCards.map(({ id, title, gradient, src }) => (
-                <div key={id} className="circuit-frame rounded-2xl cursor-pointer" onClick={() => setOpenCard(openCard === id ? null : id)}>
-                  <div className={`circuit-inner rounded-2xl p-6 text-center bg-gradient-to-br ${gradient} hover:scale-[1.01] transition-transform`}>
-                    <h3 className="text-xl font-semibold text-[#81D8D0]">{title}</h3>
-                    <p className="text-sm text-white/90">{openCard === id ? "Click to close" : "Click to preview"}</p>
-                    {openCard === id && (
-                      <iframe src={src} className="w-full h-72 mt-4 rounded-xl" loading="lazy" />
-                    )}
+                    <p className="text-xs text-gray-400 mb-2">
+                      Last Updated: {m.lastUpdated}
+                    </p>
+                    <ResponsiveContainer width="100%" height={100}>
+                      <LineChart data={m.chartData}>
+                        <Line
+                          type="monotone"
+                          dataKey="y"
+                          stroke="#81D8D0"
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                        <XAxis dataKey="x" hide />
+                        <YAxis hide />
+                        <Tooltip />
+                      </LineChart>
+                    </ResponsiveContainer>
+                    <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-32">
+                      {JSON.stringify(m.data, null, 2)}
+                    </pre>
                   </div>
                 </div>
               ))}
-            </div>
-          </section>
+        </div>
+      </section>
 
-          <footer className="text-center text-xs text-gray-500 pt-12 pb-4">
-            © {new Date().getFullYear()} James Boggs | Powered by{" "}
-            <span className="text-indigo-400">Next.js</span>
-          </footer>
-        </section>
-      </main>
+      <footer className="text-center text-xs text-gray-500 pt-12">
+        © {new Date().getFullYear()} James Boggs | Powered by{" "}
+        <span className="text-indigo-400">Next.js</span>
+      </footer>
     </div>
   );
 }
