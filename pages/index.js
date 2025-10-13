@@ -80,7 +80,7 @@ export default function Home() {
   ));
 
   return (
-    <div className="min-h-screen bg-black text-white font-poppins">
+    <div className="min-h-screen bg-dashboard text-white font-poppins">
       <Head>
         <title>James Boggs – Quant Dashboard</title>
         <meta
@@ -91,20 +91,20 @@ export default function Home() {
 
       <main className="flex flex-col md:flex-row">
         {/* SIDEBAR */}
-        <aside className="md:sticky md:top-0 md:h-screen md:w-1/2 lg:w-2/5 bg-white text-black p-6 flex justify-center items-center shadow-lg">
+        <aside className="relative md:sticky md:top-0 md:h-screen md:w-1/2 lg:w-2/5 flex justify-center items-center p-6 glow-sidebar">
           <div className="flex flex-col items-center text-center space-y-5">
             <div className="circuit-frame rounded-2xl">
               <div className="circuit-inner rounded-2xl p-1">
                 <img
                   src="/profile.png"
                   alt="James Boggs Profile"
-                  className="w-72 h-80 object-cover rounded-2xl"
+                  className="w-72 h-80 object-cover rounded-2xl border border-[#81D8D0]/40 shadow-lg"
                 />
               </div>
             </div>
             <h2 className="text-2xl font-extrabold mt-4">James Boggs</h2>
-            <p className="text-gray-600 max-w-xs">
-              Finance & AI/ML Engineer | SaaS Pricing, Treasury Strategy, ML Systems
+            <p className="text-gray-300 max-w-xs">
+              Finance & AI/ML Engineer <br /> SaaS Pricing • Treasury • ML Systems
             </p>
           </div>
         </aside>
@@ -124,7 +124,7 @@ export default function Home() {
                 ? shimmerCards
                 : models.map((m, i) => (
                     <div key={i} className="circuit-frame rounded-2xl">
-                      <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20">
+                      <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 backdrop-blur-sm">
                         <h2 className="text-lg font-bold text-[#81D8D0] mb-1">{m.model}</h2>
                         <div className="flex items-center gap-2 text-sm mb-2">
                           <span
