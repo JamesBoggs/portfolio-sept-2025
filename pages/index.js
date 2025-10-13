@@ -4,10 +4,7 @@ import { FaEnvelope } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import PricingEngineShowcase from "./components/PricingEngineShowcase";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
-const socialLinks = [
-  { href: "mailto:jboggs.econ@gmail.com", label: "Email", icon: FaEnvelope },
-];
+;
 
 export default function Home() {
   const [openCard, setOpenCard] = useState(null);
@@ -157,12 +154,6 @@ export default function Home() {
             </h1>
             <div className="circuit-trace w-full my-4" />
           </header>
-
-          <div className="circuit-frame rounded-2xl">
-            <div className="circuit-inner rounded-2xl p-4 md:p-6 overflow-hidden">
-              <PricingEngineShowcase />
-            </div>
-          </div>
 
           <section>
             <h2 className="text-2xl font-bold text-[#81D8D0] text-center mb-4">
