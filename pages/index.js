@@ -37,11 +37,9 @@ export default function Home() {
               data = { error: "Invalid JSON returned" };
             }
 
-            // Check for API success conditions
             const httpOkay = res.ok;
             const backendOkay = data?.status === "online";
             const hasError = data?.error || data?.data?.error || data?.detail;
-
             const isOnline = httpOkay && backendOkay && !hasError;
 
             return {
@@ -101,6 +99,21 @@ export default function Home() {
     },
   ];
 
+  const shimmerCards = new Array(7).fill(null).map((_, i) => (
+    <div key={i} className="circuit-frame rounded-2xl animate-pulse">
+      <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-slate-700/30 to-slate-900/20">
+        <div className="h-5 w-1/2 bg-slate-600 rounded mb-2"></div>
+        <div className="flex items-center gap-2 mb-2">
+          <span className="inline-block w-3 h-3 rounded-full bg-slate-500"></span>
+          <span className="h-3 w-12 bg-slate-600 rounded"></span>
+        </div>
+        <div className="h-3 w-3/4 bg-slate-700 rounded mb-3"></div>
+        <div className="h-[100px] bg-slate-800 rounded mb-3"></div>
+        <div className="h-20 bg-slate-700 rounded"></div>
+      </div>
+    </div>
+  ));
+
   return (
     <div className="min-h-screen bg-black text-white font-poppins">
       <Head>
@@ -112,16 +125,11 @@ export default function Home() {
       </Head>
 
       <main className="flex flex-col md:flex-row">
-        {/* Sidebar */}
         <aside className="md:sticky md:top-0 md:h-screen md:w-1/2 lg:w-2/5 bg-white text-black p-6 flex justify-center items-center shadow-lg">
           <div className="flex flex-col items-center text-center space-y-5">
             <div className="circuit-frame rounded-2xl">
               <div className="circuit-inner rounded-2xl p-1">
-                <img
-                  src="/profile.png"
-                  alt="James Boggs Profile Picture"
-                  className="w-72 h-80 object-cover rounded-2xl"
-                />
+                <img src="/profile.png" alt="James Boggs Profile" className="w-72 h-80 object-cover rounded-2xl" />
               </div>
             </div>
             <h2 className="text-2xl font-extrabold mt-4">James Boggs</h2>
@@ -132,13 +140,7 @@ export default function Home() {
               <ul className="flex space-x-4 text-indigo-500 text-xl">
                 {socialLinks.map(({ href, label, icon: Icon }) => (
                   <li key={label}>
-                    <Link
-                      href={href}
-                      aria-label={label}
-                      className="hover:scale-150 transition-transform"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <Link href={href} aria-label={label} className="hover:scale-150 transition-transform" target="_blank" rel="noopener noreferrer">
                       <Icon />
                     </Link>
                   </li>
@@ -148,98 +150,65 @@ export default function Home() {
           </div>
         </aside>
 
-        {/* Main */}
         <section className="w-full md:w-1/2 lg:w-4/5 overflow-y-auto px-4 py-8 space-y-16">
           <header className="text-center space-y-4">
             <h1 className="text-5xl lg:text-6xl font-extrabold">
-              FINANCE & AI/ML <br />
-              <span className="text-[#81D8D0]">ENGINEER</span>
+              FINANCE & AI/ML <br /><span className="text-[#81D8D0]">ENGINEER</span>
             </h1>
             <div className="circuit-trace w-full my-4" />
           </header>
 
-          {/* Pricing Engine */}
           <div className="circuit-frame rounded-2xl">
             <div className="circuit-inner rounded-2xl p-4 md:p-6 overflow-hidden">
               <PricingEngineShowcase />
             </div>
           </div>
 
-          {/* Live Dashboard */}
           <section>
             <h2 className="text-2xl font-bold text-[#81D8D0] text-center mb-4">
               Live Quant Dashboard
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {models.map((m, i) => (
-                <div key={i} className="circuit-frame rounded-2xl">
-                  <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20">
-                    <h2 className="text-lg font-bold text-[#81D8D0] mb-1">
-                      {m.model}
-                    </h2>
-                    <div className="flex items-center gap-2 text-sm mb-2">
-                      <span
-                        className={`inline-block w-3 h-3 rounded-full ${
-                          m.status === "online" ? "bg-green-500" : "bg-red-500"
-                        }`}
-                      ></span>
-                      <span>
-                        {m.status.charAt(0).toUpperCase() + m.status.slice(1)}
-                      </span>
+              {models.length === 0
+                ? shimmerCards
+                : models.map((m, i) => (
+                    <div key={i} className="circuit-frame rounded-2xl">
+                      <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20">
+                        <h2 className="text-lg font-bold text-[#81D8D0] mb-1">{m.model}</h2>
+                        <div className="flex items-center gap-2 text-sm mb-2">
+                          <span className={`inline-block w-3 h-3 rounded-full ${m.status === "online" ? "bg-green-500" : "bg-red-500"}`}></span>
+                          <span>{m.status.charAt(0).toUpperCase() + m.status.slice(1)}</span>
+                        </div>
+                        <p className="text-xs text-gray-400 mb-2">Last Updated: {m.lastUpdated}</p>
+                        <ResponsiveContainer width="100%" height={100}>
+                          <LineChart data={m.chartData}>
+                            <Line type="monotone" dataKey="y" stroke="#81D8D0" strokeWidth={2} dot={false} />
+                            <XAxis dataKey="x" hide />
+                            <YAxis hide />
+                            <Tooltip />
+                          </LineChart>
+                        </ResponsiveContainer>
+                        <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-32">
+                          {JSON.stringify(m.data, null, 2)}
+                        </pre>
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-400 mb-2">
-                      Last Updated: {m.lastUpdated}
-                    </p>
-                    <ResponsiveContainer width="100%" height={100}>
-                      <LineChart data={m.chartData}>
-                        <Line
-                          type="monotone"
-                          dataKey="y"
-                          stroke="#81D8D0"
-                          strokeWidth={2}
-                          dot={false}
-                        />
-                        <XAxis dataKey="x" hide />
-                        <YAxis hide />
-                        <Tooltip />
-                      </LineChart>
-                    </ResponsiveContainer>
-                    <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-32">
-                      {JSON.stringify(m.data, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              ))}
+                  ))}
             </div>
           </section>
 
-          {/* Notebook Case Studies */}
           <section className="space-y-4">
             <h2 className="text-2xl font-bold text-[#81D8D0] text-center">
               Notebook Case Studies
             </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {notebookCards.map(({ id, title, gradient, src }) => (
-                <div
-                  key={id}
-                  className="circuit-frame rounded-2xl cursor-pointer"
-                  onClick={() => setOpenCard(openCard === id ? null : id)}
-                >
-                  <div
-                    className={`circuit-inner rounded-2xl p-6 text-center bg-gradient-to-br ${gradient} hover:scale-[1.01] transition-transform`}
-                  >
-                    <h3 className="text-xl font-semibold text-[#81D8D0]">
-                      {title}
-                    </h3>
-                    <p className="text-sm text-white/90">
-                      {openCard === id ? "Click to close" : "Click to preview"}
-                    </p>
+                <div key={id} className="circuit-frame rounded-2xl cursor-pointer" onClick={() => setOpenCard(openCard === id ? null : id)}>
+                  <div className={`circuit-inner rounded-2xl p-6 text-center bg-gradient-to-br ${gradient} hover:scale-[1.01] transition-transform`}>
+                    <h3 className="text-xl font-semibold text-[#81D8D0]">{title}</h3>
+                    <p className="text-sm text-white/90">{openCard === id ? "Click to close" : "Click to preview"}</p>
                     {openCard === id && (
-                      <iframe
-                        src={src}
-                        className="w-full h-72 mt-4 rounded-xl"
-                        loading="lazy"
-                      />
+                      <iframe src={src} className="w-full h-72 mt-4 rounded-xl" loading="lazy" />
                     )}
                   </div>
                 </div>
