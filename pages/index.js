@@ -122,10 +122,10 @@ export default function Home() {
           {/* VALUE PROP */}
           <section className="text-center text-sm text-gray-300 max-w-xl mx-auto space-y-4 mb-8">
             <p>
-              This dashboard showcases a production-style ML stack for real-time financial modeling. Each card is powered by a live PyTorch model exposed via FastAPI.
+            This dashboard runs a live machine learning stack built for real-time financial modeling and decision support. Each module connects to a dedicated PyTorch model served through FastAPI, with full observability into latency, uptime, and system health. The architecture is modular by design, allowing each API to scale, fail, or improve independently while maintaining low-latency response times under real market load.  
             </p>
             <p>
-              APIs are independently deployed with observability metrics (latency, uptime, health checks). This mirrors how modern quant infra runs under pressure.
+              Beyond the interface, this setup reflects how I build quant infrastructure in production—fast, fault-tolerant, and measurable. Every component is engineered for clarity, deployment efficiency, and the ability to handle live inference workloads across multiple environments. It’s less a demo and more a glimpse into how I structure and operate machine learning systems that are built to earn, adapt, and last.
             </p>
             <p className="italic text-slate-400 text-xs">
               Stack: PyTorch • CUDA • FastAPI • Render • Next.js • Tailwind
