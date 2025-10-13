@@ -80,7 +80,7 @@ export default function Home() {
   ));
 
   return (
-    <div className="min-h-screen bg-black text-white font-poppins flex flex-col items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-black text-white font-poppins">
       <Head>
         <title>James Boggs – Quant Dashboard</title>
         <meta
@@ -89,61 +89,85 @@ export default function Home() {
         />
       </Head>
 
-      <header className="text-center mb-10">
-        <h1 className="text-5xl lg:text-6xl font-extrabold">
-          LIVE <span className="text-[#81D8D0]">QUANT DASHBOARD</span>
-        </h1>
-        <div className="circuit-trace w-full my-4" />
-      </header>
+      <main className="flex flex-col md:flex-row">
+        {/* SIDEBAR */}
+        <aside className="md:sticky md:top-0 md:h-screen md:w-1/2 lg:w-2/5 bg-white text-black p-6 flex justify-center items-center shadow-lg">
+          <div className="flex flex-col items-center text-center space-y-5">
+            <div className="circuit-frame rounded-2xl">
+              <div className="circuit-inner rounded-2xl p-1">
+                <img
+                  src="/profile.png"
+                  alt="James Boggs Profile"
+                  className="w-72 h-80 object-cover rounded-2xl"
+                />
+              </div>
+            </div>
+            <h2 className="text-2xl font-extrabold mt-4">James Boggs</h2>
+            <p className="text-gray-600 max-w-xs">
+              Finance & AI/ML Engineer | SaaS Pricing, Treasury Strategy, ML Systems
+            </p>
+          </div>
+        </aside>
 
-      <section className="w-full max-w-6xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {models.length === 0
-            ? shimmerCards
-            : models.map((m, i) => (
-                <div key={i} className="circuit-frame rounded-2xl">
-                  <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20">
-                    <h2 className="text-lg font-bold text-[#81D8D0] mb-1">{m.model}</h2>
-                    <div className="flex items-center gap-2 text-sm mb-2">
-                      <span
-                        className={`inline-block w-3 h-3 rounded-full ${
-                          m.status === "online" ? "bg-green-500" : "bg-red-500"
-                        }`}
-                      ></span>
-                      <span>
-                        {m.status.charAt(0).toUpperCase() + m.status.slice(1)}
-                      </span>
+        {/* DASHBOARD */}
+        <section className="w-full md:w-1/2 lg:w-4/5 overflow-y-auto px-4 py-8 space-y-16">
+          <header className="text-center space-y-4">
+            <h1 className="text-5xl lg:text-6xl font-extrabold">
+              LIVE <span className="text-[#81D8D0]">QUANT DASHBOARD</span>
+            </h1>
+            <div className="circuit-trace w-full my-4" />
+          </header>
+
+          <section>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {models.length === 0
+                ? shimmerCards
+                : models.map((m, i) => (
+                    <div key={i} className="circuit-frame rounded-2xl">
+                      <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20">
+                        <h2 className="text-lg font-bold text-[#81D8D0] mb-1">{m.model}</h2>
+                        <div className="flex items-center gap-2 text-sm mb-2">
+                          <span
+                            className={`inline-block w-3 h-3 rounded-full ${
+                              m.status === "online" ? "bg-green-500" : "bg-red-500"
+                            }`}
+                          ></span>
+                          <span>
+                            {m.status.charAt(0).toUpperCase() + m.status.slice(1)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-400 mb-2">
+                          Last Updated: {m.lastUpdated}
+                        </p>
+                        <ResponsiveContainer width="100%" height={100}>
+                          <LineChart data={m.chartData}>
+                            <Line
+                              type="monotone"
+                              dataKey="y"
+                              stroke="#81D8D0"
+                              strokeWidth={2}
+                              dot={false}
+                            />
+                            <XAxis dataKey="x" hide />
+                            <YAxis hide />
+                            <Tooltip />
+                          </LineChart>
+                        </ResponsiveContainer>
+                        <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-32">
+                          {JSON.stringify(m.data, null, 2)}
+                        </pre>
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-400 mb-2">
-                      Last Updated: {m.lastUpdated}
-                    </p>
-                    <ResponsiveContainer width="100%" height={100}>
-                      <LineChart data={m.chartData}>
-                        <Line
-                          type="monotone"
-                          dataKey="y"
-                          stroke="#81D8D0"
-                          strokeWidth={2}
-                          dot={false}
-                        />
-                        <XAxis dataKey="x" hide />
-                        <YAxis hide />
-                        <Tooltip />
-                      </LineChart>
-                    </ResponsiveContainer>
-                    <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-32">
-                      {JSON.stringify(m.data, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              ))}
-        </div>
-      </section>
+                  ))}
+            </div>
+          </section>
 
-      <footer className="text-center text-xs text-gray-500 pt-12">
-        © {new Date().getFullYear()} James Boggs | Powered by{" "}
-        <span className="text-indigo-400">Next.js</span>
-      </footer>
+          <footer className="text-center text-xs text-gray-500 pt-12 pb-4">
+            © {new Date().getFullYear()} James Boggs | Powered by{" "}
+            <span className="text-indigo-400">Next.js</span>
+          </footer>
+        </section>
+      </main>
     </div>
   );
 }
