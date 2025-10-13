@@ -80,7 +80,6 @@ export default function Home() {
     load();
   }, []);
 
-  // Optional: collapse if clicking outside any card
   useEffect(() => {
     function handleClickOutside(event) {
       if (
@@ -149,100 +148,4 @@ export default function Home() {
           </header>
 
           {/* MODEL CARDS */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {models.length === 0
-              ? shimmerCards
-              : models.map((m, i) => (
-                  <div
-                    key={i}
-                    ref={(el) => (cardsRef.current[i] = el)}
-                    className="circuit-frame rounded-2xl hover:scale-[1.01] transition-transform"
-                  >
-                    <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 backdrop-blur-sm">
-                      <h2 className="text-lg font-bold text-[#81D8D0] mb-1">{m.model}</h2>
-
-                      {/* Status + metrics */}
-                      <div className="flex items-center gap-2 text-sm mb-2">
-                        <span
-                          className={`inline-block w-3 h-3 rounded-full ${
-                            m.status === "online" ? "bg-green-500" : "bg-red-500"
-                          }`}
-                        ></span>
-                        <span>
-                          {m.status.charAt(0).toUpperCase() + m.status.slice(1)}
-                        </span>
-                      </div>
-                      <p className="text-[10px] text-gray-400 mb-2">
-                        {m.version} • {m.framework} • Latency:{" "}
-                        {m.latency ? `${m.latency}ms` : "—"} • Uptime: {m.uptime}%
-                      </p>
-
-                      {/* Chart */}
-                      <ResponsiveContainer width="100%" height={100}>
-                        <LineChart data={m.chartData}>
-                          <Line
-                            type="monotone"
-                            dataKey="y"
-                            stroke="#81D8D0"
-                            strokeWidth={2}
-                            dot={false}
-                          />
-                          <XAxis dataKey="x" hide />
-                          <YAxis hide />
-                          <Tooltip />
-                        </LineChart>
-                      </ResponsiveContainer>
-
-                      {/* JSON Preview */}
-                      <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-32">
-                        {JSON.stringify(m.data, null, 2)}
-                      </pre>
-
-                      {/* Badges */}
-                      <div className="flex flex-wrap gap-2 text-[10px] text-gray-400 mt-3">
-                        <span className="px-2 py-1 rounded bg-slate-800/60">🧠 PyTorch</span>
-                        <span className="px-2 py-1 rounded bg-slate-800/60">⚡ FastAPI</span>
-                        <span className="px-2 py-1 rounded bg-slate-800/60">☁️ Render</span>
-                        <span className="px-2 py-1 rounded bg-slate-800/60">🔒 HTTPS Live</span>
-                      </div>
-
-                      {/* Expand / Collapse Button */}
-                      <button
-                        onClick={() =>
-                          setExpanded(expanded === i ? null : i)
-                        }
-                        className="w-full text-xs text-indigo-400 mt-3 hover:underline"
-                      >
-                        {expanded === i ? "Hide Model Card ▲" : "View Model Card ▼"}
-                      </button>
-
-                      {/* Animated Expand Section */}
-                      <div className={`model-card-expand ${expanded === i ? "active" : ""}`}>
-                        <div className="text-xs bg-slate-800/40 mt-2 p-3 rounded-md space-y-1 text-gray-300 backdrop-blur-sm">
-                          <p>Architecture: GRU → Dense(64→1)</p>
-                          <p>Training Data: Synthetic + Historical Signals</p>
-                          <p>Loss: MSE • Optimizer: AdamW</p>
-                          <p>Deployment: Docker + FastAPI on Render</p>
-                          <p>Last Retrain: Oct 10, 2025</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-          </div>
-
-          {/* FOOTER */}
-          <footer className="text-center text-xs text-gray-500 pt-12 pb-4 space-y-2">
-            <div className="flex justify-center flex-wrap gap-2 text-[11px]">
-              <span>Quant ML Stack •</span>
-              <span>PyTorch • CUDA • FastAPI • Render • Next.js • Tailwind</span>
-            </div>
-            <p>
-              © {new Date().getFullYear()} James Boggs – Built for Real-Time Quant Systems
-            </p>
-          </footer>
-        </section>
-      </main>
-    </div>
-  );
-}
+          <div className="grid
