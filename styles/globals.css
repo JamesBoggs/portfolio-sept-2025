@@ -46,7 +46,7 @@ html, body {
   );
 }
 
-/* ===== Circuit Styling ===== */
+/* ===== Circuit Line (soft animated divider) ===== */
 .circuit-trace {
   height: 2px;
   width: 100%;
@@ -56,35 +56,34 @@ html, body {
   animation: rainbow 14s linear infinite;
   filter: drop-shadow(0 0 8px rgba(129,216,208,0.35));
 }
-.circuit-trace.pulse {
-  animation: rainbow 14s linear infinite, pulseGlow 6s ease-in-out infinite;
-}
 
-/* Frame with animated border */
+/* ===== Card Frames ===== */
 .circuit-frame {
   padding: 1.5px;
   border-radius: 1rem;
   background: var(--rgb-grad);
   background-size: 400% 400%;
   animation: rainbow 14s linear infinite;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.circuit-frame.pulse {
-  animation: rainbow 14s linear infinite, pulseGlow 6s ease-in-out infinite;
-}
-
-/* Inner panel */
 .circuit-inner {
   display: block;
   border-radius: inherit;
   background-color: #0f172a;
   position: relative;
+  transition: background 0.3s ease;
 }
-.circuit-frame,
-.circuit-frame > .circuit-inner {
-  border-radius: 1rem;
+.circuit-frame:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 20px rgba(129,216,208,0.15),
+    0 0 40px rgba(129,216,208,0.05);
+}
+.circuit-inner:hover {
+  background-color: #162240;
 }
 
-/* ===== Badges ===== */
+/* ===== Status Badges ===== */
 .badge {
   width: 0.75rem;
   height: 0.75rem;
@@ -115,17 +114,18 @@ html, body {
   50% { box-shadow: 0 0 0 4px rgba(250,204,21,0); }
 }
 
-/* ========================================================= */
-/*                SLATE-GRAY DASHBOARD BACKGROUND            */
-/* ========================================================= */
+/* ===== Dashboard Background ===== */
 .bg-dashboard {
-  background: #111827; /* Slate-900 */
+  background: radial-gradient(
+      circle at top left,
+      rgba(129, 216, 208, 0.04),
+      transparent 50%
+    ),
+    #111827;
   color: white;
 }
 
-/* ========================================================= */
-/*        FROSTED GLASS SIDEBAR + TIFFANY LAVA EFFECT        */
-/* ========================================================= */
+/* ===== Sidebar: Frosted + Tiffany Glow ===== */
 .glow-sidebar {
   position: relative;
   overflow: hidden;
@@ -133,8 +133,6 @@ html, body {
   background: rgba(255, 255, 255, 0.06);
   border-right: 1px solid rgba(129, 216, 208, 0.25);
 }
-
-/* Tiffany-blue glowing blobs behind the frosted glass */
 .glow-sidebar::before,
 .glow-sidebar::after {
   content: "";
@@ -146,7 +144,6 @@ html, body {
   animation: sidebar-lava 55s infinite ease-in-out alternate;
   z-index: 0;
 }
-
 .glow-sidebar::before {
   width: 80vmax;
   height: 80vmax;
@@ -155,7 +152,6 @@ html, body {
   background: radial-gradient(circle, rgba(129,216,208,0.8) 0%, transparent 70%);
   animation-delay: 0s;
 }
-
 .glow-sidebar::after {
   width: 60vmax;
   height: 60vmax;
@@ -164,8 +160,6 @@ html, body {
   background: radial-gradient(circle, rgba(180,255,245,0.8) 0%, transparent 70%);
   animation-delay: 10s;
 }
-
-/* Slow drifting bubble motion */
 @keyframes sidebar-lava {
   0%   { transform: translate(0%, 0%) scale(1); }
   25%  { transform: translate(8%, -5%) scale(1.05); }
@@ -173,9 +167,37 @@ html, body {
   75%  { transform: translate(6%, 3%) scale(0.97); }
   100% { transform: translate(-6%, -8%) scale(1); }
 }
-
-/* Keep sidebar content above glow */
 .glow-sidebar > * {
   position: relative;
   z-index: 2;
+}
+
+/* ===== Buttons (neutral luxe) ===== */
+button, a {
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+a:hover, button:hover {
+  transform: translateY(-1px);
+  background-color: rgba(180, 180, 180, 0.1);
+}
+
+/* ===== Charts & Code Areas ===== */
+.recharts-tooltip-wrapper {
+  font-size: 11px;
+  background-color: rgba(17, 24, 39, 0.9);
+  color: white;
+  border: 1px solid rgba(129, 216, 208, 0.3);
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+pre {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(129,216,208,0.2) transparent;
+}
+pre::-webkit-scrollbar {
+  height: 4px;
+}
+pre::-webkit-scrollbar-thumb {
+  background: rgba(129,216,208,0.3);
+  border-radius: 2px;
 }
