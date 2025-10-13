@@ -1,13 +1,10 @@
-export default function handler(req, res) {
-  res.status(200).json({
-    model: "forecast-transformer-v0.9.1",
-    status: "beta",
-    latency: "92ms",
-    lastUpdated: "2025-10-11",
-    data: {
-      days: 90,
-      predictedARR: [102.1, 106.4, 109.7],
-      accuracy: "±6.3%",
-    },
-  });
+export default async function handler(req, res) {
+  try {
+    const apiRes = await fetch("https://forecast-fastapi.onrender.com/forecast");
+    const data = await apiRes.json();
+
+    res.status(apiRes.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: "API call failed.", details: err.message });
+  }
 }
