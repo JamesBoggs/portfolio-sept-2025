@@ -1,3 +1,4 @@
+// pages/index.js
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import {
@@ -13,19 +14,28 @@ export default function Home() {
   const [models, setModels] = useState([]);
   const [expanded, setExpanded] = useState(null);
 
-  const notebookMap = {
-    "montecarlo": "01_montecarlo.html",
-    "elasticity": "02_elasticity.html",
-    "price-engine": "03_price_engine.html",
-    "forecast": "04_forecast.html",
-    "sentiment": "05_sentiment_stub.html",
-    "volatility": "06_volatility_garch.html",
-    "rl-pricing": "07_rl_pricing_stub.html",
+  const notebookPath = {
+    "montecarlo": "01_monte_carlo_sim.html",
+    "elasticity": "03_elasticity_saas.html",
+    "price-engine": "02_pricing_bandits_kaseya.html",
+    "forecast": "04_forecast_signals.html",
+    "rl-pricing": "06_rl_pricing.html",
+    "sentiment": "05_sentiment_alpha.html",
+    "volatility": "07_garch_volatility.html",
   };
 
   useEffect(() => {
     async function load() {
-      const endpoints = Object.keys(notebookMap);
+      const endpoints = [
+        "elasticity",
+        "price-engine",
+        "montecarlo",
+        "forecast",
+        "rl-pricing",
+        "sentiment",
+        "volatility",
+      ];
+
       const responses = await Promise.all(
         endpoints.map(async (name) => {
           const start = performance.now();
@@ -46,7 +56,6 @@ export default function Home() {
 
             return {
               model: data?.model || name,
-              id: name,
               status: isOnline ? "online" : "offline",
               latency,
               uptime: (Math.random() * 1 + 99).toFixed(2),
@@ -58,12 +67,10 @@ export default function Home() {
                 x: `W${i + 1}`,
                 y: Math.random() * 100,
               })),
-              notebookPath: `/notebooks/${notebookMap[name]}`,
             };
           } catch {
             return {
               model: name,
-              id: name,
               status: "offline",
               latency: null,
               uptime: "—",
@@ -72,13 +79,14 @@ export default function Home() {
               lastUpdated: new Date().toLocaleString(),
               data: { error: "Fetch failed" },
               chartData: [],
-              notebookPath: `/notebooks/${notebookMap[name]}`,
             };
           }
         })
       );
+
       setModels(responses);
     }
+
     load();
   }, []);
 
@@ -99,10 +107,7 @@ export default function Home() {
     <div className="min-h-screen bg-dashboard text-white font-poppins">
       <Head>
         <title>James Boggs – Quant Dashboard</title>
-        <meta
-          name="description"
-          content="Live Quant Dashboard by James Boggs – Finance & AI/ML Engineer"
-        />
+        <meta name="description" content="Real-time ML/Quant Finance Dashboard powered by PyTorch + FastAPI." />
       </Head>
 
       <main className="flex flex-col md:flex-row">
@@ -110,16 +115,13 @@ export default function Home() {
           <div className="flex flex-col items-center text-center space-y-5">
             <div className="circuit-frame rounded-2xl">
               <div className="circuit-inner rounded-2xl p-1">
-                <img
-                  src="/profile.png"
-                  alt="James Boggs Profile"
-                  className="w-72 h-80 object-cover rounded-2xl border border-[#81D8D0]/40 shadow-lg"
-                />
+                <img src="/profile.png" alt="James Boggs Profile" className="w-72 h-80 object-cover rounded-2xl border border-[#81D8D0]/40 shadow-lg" />
               </div>
             </div>
             <h2 className="text-2xl font-extrabold mt-4">James Boggs</h2>
             <p className="text-gray-300 max-w-xs">
-              Finance & AI/ML Engineer <br /> SaaS Pricing • Treasury • ML Systems
+              Finance & AI/ML Engineer<br />
+              SaaS Pricing • Quant Forecasting • Real-Time Infra
             </p>
           </div>
         </aside>
@@ -129,85 +131,66 @@ export default function Home() {
             <h1 className="text-5xl lg:text-6xl font-extrabold">
               LIVE <span className="text-[#81D8D0]">QUANT DASHBOARD</span>
             </h1>
-            <div className="circuit-trace w-full my-4" />
-            <p className="text-sm text-gray-400 max-w-xl mx-auto px-4">
-              This portfolio shows end-to-end machine learning systems built for real-time
-              financial modeling. All models run on live PyTorch APIs. Notebooks and simulations
-              are embedded directly below. <strong>Review and deploy instantly.</strong>
+            <p className="text-sm text-gray-400 max-w-2xl mx-auto">
+              Each card below is powered by a live PyTorch model deployed with FastAPI. This is a real-time simulation stack built to mirror production systems in quant finance.
             </p>
+            <div className="circuit-trace w-full my-4" />
           </header>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {models.length === 0
               ? shimmerCards
               : models.map((m, i) => (
-                  <div
-                    key={i}
-                    className="circuit-frame rounded-2xl hover:scale-[1.01] transition-transform"
-                  >
+                <div key={i} className="space-y-4">
+                  {/* Circuit-framed API card */}
+                  <div className="circuit-frame rounded-2xl hover:scale-[1.01] transition-transform">
                     <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 backdrop-blur-sm">
-                      <h2 className="text-lg font-bold text-[#81D8D0] mb-1">
-                        {m.model}
-                      </h2>
-
+                      <h2 className="text-lg font-bold text-[#81D8D0] mb-1">{m.model}</h2>
                       <div className="flex items-center gap-2 text-sm mb-2">
-                        <span
-                          className={`inline-block w-3 h-3 rounded-full ${
-                            m.status === "online" ? "bg-green-500" : "bg-red-500"
-                          }`}
-                        ></span>
-                        <span>
-                          {m.status.charAt(0).toUpperCase() + m.status.slice(1)}
-                        </span>
+                        <span className={`inline-block w-3 h-3 rounded-full ${m.status === "online" ? "bg-green-500" : "bg-red-500"}`}></span>
+                        <span>{m.status.charAt(0).toUpperCase() + m.status.slice(1)}</span>
                       </div>
                       <p className="text-[10px] text-gray-400 mb-2">
-                        {m.version} • {m.framework} • Latency:{" "}
-                        {m.latency ? `${m.latency}ms` : "—"} • Uptime: {m.uptime}%
+                        {m.version} • {m.framework} • Latency: {m.latency ? `${m.latency}ms` : "—"} • Uptime: {m.uptime}%
                       </p>
-
                       <ResponsiveContainer width="100%" height={100}>
                         <LineChart data={m.chartData}>
-                          <Line
-                            type="monotone"
-                            dataKey="y"
-                            stroke="#81D8D0"
-                            strokeWidth={2}
-                            dot={false}
-                          />
+                          <Line type="monotone" dataKey="y" stroke="#81D8D0" strokeWidth={2} dot={false} />
                           <XAxis dataKey="x" hide />
                           <YAxis hide />
                           <Tooltip />
                         </LineChart>
                       </ResponsiveContainer>
-
                       <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-32">
                         {JSON.stringify(m.data, null, 2)}
                       </pre>
-
-                      <button
-                        onClick={() =>
-                          setExpanded(expanded === i ? null : i)
-                        }
-                        className="w-full text-xs text-indigo-400 mt-3 hover:underline"
-                      >
-                        {expanded === i ? "Hide Notebook ▲" : "View Notebook ▼"}
-                      </button>
-
-                      {expanded === i && (
-                        <div className="mt-3">
-                          <iframe
-                            src={m.notebookPath}
-                            className="w-full h-[400px] rounded-md border border-gray-700"
-                            title={`${m.model} notebook`}
-                          />
-                          <div className="text-xs text-gray-400 mt-2">
-                            Architecture: GRU → Dense(64→1) • Loss: MSE • Optimizer: AdamW
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </div>
-                ))}
+
+                  {/* Notebook + GitHub (outside frame) */}
+                  <div className="text-xs bg-slate-900/30 p-3 rounded-xl border border-slate-700 space-y-3">
+                    <button onClick={() => setExpanded(expanded === i ? null : i)} className="w-full text-xs text-indigo-400 hover:underline text-left">
+                      {expanded === i ? "Hide Notebook" : "View Notebook"}
+                    </button>
+
+                    {expanded === i && (
+                      <iframe
+                        src={`/notebooks/${notebookPath[m.model.toLowerCase()]}`}
+                        className="w-full h-[400px] rounded-md border border-slate-700"
+                      />
+                    )}
+
+                    <a
+                      href={`https://github.com/jboggs-ai/${m.model.toLowerCase()}-fastapi`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block mt-2 px-3 py-1 bg-slate-800/50 border border-slate-600 rounded hover:bg-slate-700 text-center text-white text-xs w-full"
+                    >
+                      View GitHub Repo
+                    </a>
+                  </div>
+                </div>
+              ))}
           </div>
 
           <footer className="text-center text-xs text-gray-500 pt-12 pb-4 space-y-2">
@@ -215,9 +198,7 @@ export default function Home() {
               <span>Quant ML Stack •</span>
               <span>PyTorch • CUDA • FastAPI • Render • Next.js • Tailwind</span>
             </div>
-            <p>
-              © {new Date().getFullYear()} James Boggs – Built for Real-Time Quant Systems
-            </p>
+            <p>© {new Date().getFullYear()} James Boggs – Built for Real-Time Quant Systems</p>
           </footer>
         </section>
       </main>
