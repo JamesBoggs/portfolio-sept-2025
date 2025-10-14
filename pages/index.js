@@ -13,18 +13,19 @@ export default function Home() {
   const [models, setModels] = useState([]);
   const [expanded, setExpanded] = useState(null);
 
+  const notebookMap = {
+    "montecarlo": "01_montecarlo.html",
+    "elasticity": "02_elasticity.html",
+    "price-engine": "03_price_engine.html",
+    "forecast": "04_forecast.html",
+    "sentiment": "05_sentiment_stub.html",
+    "volatility": "06_volatility_garch.html",
+    "rl-pricing": "07_rl_pricing_stub.html",
+  };
+
   useEffect(() => {
     async function load() {
-      const endpoints = [
-        "elasticity",
-        "price-engine",
-        "montecarlo",
-        "forecast",
-        "rl-pricing",
-        "sentiment",
-        "volatility",
-      ];
-
+      const endpoints = Object.keys(notebookMap);
       const responses = await Promise.all(
         endpoints.map(async (name) => {
           const start = performance.now();
@@ -45,6 +46,7 @@ export default function Home() {
 
             return {
               model: data?.model || name,
+              id: name,
               status: isOnline ? "online" : "offline",
               latency,
               uptime: (Math.random() * 1 + 99).toFixed(2),
@@ -56,10 +58,12 @@ export default function Home() {
                 x: `W${i + 1}`,
                 y: Math.random() * 100,
               })),
+              notebookPath: `/notebooks/${notebookMap[name]}`,
             };
           } catch {
             return {
               model: name,
+              id: name,
               status: "offline",
               latency: null,
               uptime: "—",
@@ -68,16 +72,28 @@ export default function Home() {
               lastUpdated: new Date().toLocaleString(),
               data: { error: "Fetch failed" },
               chartData: [],
+              notebookPath: `/notebooks/${notebookMap[name]}`,
             };
           }
         })
       );
-
       setModels(responses);
     }
-
     load();
   }, []);
+
+  const shimmerCards = new Array(7).fill(null).map((_, i) => (
+    <div key={i} className="circuit-frame rounded-2xl animate-pulse">
+      <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-slate-700/30 to-slate-900/20">
+        <div className="h-5 w-1/2 bg-slate-600 rounded mb-2"></div>
+        <div className="flex items-center gap-2 mb-2">
+          <span className="inline-block w-3 h-3 rounded-full bg-slate-500"></span>
+          <span className="h-3 w-12 bg-slate-600 rounded"></span>
+        </div>
+        <div className="h-[100px] bg-slate-800 rounded"></div>
+      </div>
+    </div>
+  ));
 
   return (
     <div className="min-h-screen bg-dashboard text-white font-poppins">
@@ -90,7 +106,6 @@ export default function Home() {
       </Head>
 
       <main className="flex flex-col md:flex-row">
-        {/* SIDEBAR */}
         <aside className="relative md:sticky md:top-0 md:h-screen md:w-1/2 lg:w-2/5 flex justify-center items-center p-6 glow-sidebar">
           <div className="flex flex-col items-center text-center space-y-5">
             <div className="circuit-frame rounded-2xl">
@@ -109,52 +124,31 @@ export default function Home() {
           </div>
         </aside>
 
-        {/* MAIN CONTENT */}
         <section className="w-full md:w-1/2 lg:w-4/5 overflow-y-auto px-4 py-8 space-y-16">
-          {/* HEADER */}
           <header className="text-center space-y-4">
             <h1 className="text-5xl lg:text-6xl font-extrabold">
               LIVE <span className="text-[#81D8D0]">QUANT DASHBOARD</span>
             </h1>
             <div className="circuit-trace w-full my-4" />
+            <p className="text-sm text-gray-400 max-w-xl mx-auto px-4">
+              This portfolio shows end-to-end machine learning systems built for real-time
+              financial modeling. All models run on live PyTorch APIs. Notebooks and simulations
+              are embedded directly below. <strong>Review and deploy instantly.</strong>
+            </p>
           </header>
 
-          {/* VALUE PROP */}
-          <section className="text-center text-sm text-gray-300 max-w-xl mx-auto space-y-4 mb-8">
-            <p>
-            This dashboard runs a live machine learning stack built for real-time financial modeling and decision support. Each module connects to a dedicated PyTorch model served through FastAPI, with full observability into latency, uptime, and system health. The architecture is modular by design, allowing each API to scale, fail, or improve independently while maintaining low-latency response times under real market load.  
-            </p>
-            <p>
-              Beyond the interface, this setup reflects how I build quant infrastructure in production—fast, fault-tolerant, and measurable. Every component is engineered for clarity, deployment efficiency, and the ability to handle live inference workloads across multiple environments. It’s less a demo and more a glimpse into how I structure and operate machine learning systems that are built to earn, adapt, and last.
-            </p>
-            <p className="italic text-slate-400 text-xs">
-              Stack: PyTorch • CUDA • FastAPI • Render • Next.js • Tailwind
-            </p>
-          </section>
-
-          {/* MODEL CARDS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {models.length === 0
-              ? Array.from({ length: 7 }).map((_, i) => (
-                  <div key={i} className="circuit-frame rounded-2xl animate-pulse">
-                    <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-slate-700/30 to-slate-900/20">
-                      <div className="h-5 w-1/2 bg-slate-600 rounded mb-2"></div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="inline-block w-3 h-3 rounded-full bg-slate-500"></span>
-                        <span className="h-3 w-12 bg-slate-600 rounded"></span>
-                      </div>
-                      <div className="h-[100px] bg-slate-800 rounded mb-3"></div>
-                      <div className="h-20 bg-slate-700 rounded"></div>
-                    </div>
-                  </div>
-                ))
+              ? shimmerCards
               : models.map((m, i) => (
                   <div
                     key={i}
-                    className="circuit-frame rounded-2xl transition-all"
+                    className="circuit-frame rounded-2xl hover:scale-[1.01] transition-transform"
                   >
                     <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 backdrop-blur-sm">
-                      <h2 className="text-lg font-bold text-[#81D8D0] mb-1">{m.model}</h2>
+                      <h2 className="text-lg font-bold text-[#81D8D0] mb-1">
+                        {m.model}
+                      </h2>
 
                       <div className="flex items-center gap-2 text-sm mb-2">
                         <span
@@ -166,7 +160,6 @@ export default function Home() {
                           {m.status.charAt(0).toUpperCase() + m.status.slice(1)}
                         </span>
                       </div>
-
                       <p className="text-[10px] text-gray-400 mb-2">
                         {m.version} • {m.framework} • Latency:{" "}
                         {m.latency ? `${m.latency}ms` : "—"} • Uptime: {m.uptime}%
@@ -191,55 +184,38 @@ export default function Home() {
                         {JSON.stringify(m.data, null, 2)}
                       </pre>
 
-                      {/* Expand/Collapse Button */}
                       <button
-                        onClick={() => setExpanded(expanded === i ? null : i)}
+                        onClick={() =>
+                          setExpanded(expanded === i ? null : i)
+                        }
                         className="w-full text-xs text-indigo-400 mt-3 hover:underline"
                       >
-                        {expanded === i ? "Hide Model Card ▲" : "View Model Card ▼"}
+                        {expanded === i ? "Hide Notebook ▲" : "View Notebook ▼"}
                       </button>
 
                       {expanded === i && (
-                        <div className="text-xs bg-black/30 mt-2 p-3 rounded-md space-y-1 text-gray-300">
-                          <p>Architecture: GRU → Dense(64→1)</p>
-                          <p>Training Data: Synthetic + Historical</p>
-                          <p>Loss: MSE • Optimizer: AdamW</p>
-                          <p>Deployment: Docker + FastAPI on Render</p>
-                          <p>Last Retrain: Oct 10, 2025</p>
+                        <div className="mt-3">
+                          <iframe
+                            src={m.notebookPath}
+                            className="w-full h-[400px] rounded-md border border-gray-700"
+                            title={`${m.model} notebook`}
+                          />
+                          <div className="text-xs text-gray-400 mt-2">
+                            Architecture: GRU → Dense(64→1) • Loss: MSE • Optimizer: AdamW
+                          </div>
                         </div>
                       )}
-
-                      {/* Stack Badges */}
-                      <div className="flex flex-wrap gap-2 text-[10px] text-gray-400 mt-3">
-                        <span className="px-2 py-1 rounded bg-slate-800/60">🧠 PyTorch</span>
-                        <span className="px-2 py-1 rounded bg-slate-800/60">⚡ FastAPI</span>
-                        <span className="px-2 py-1 rounded bg-slate-800/60">☁️ Render</span>
-                        <span className="px-2 py-1 rounded bg-slate-800/60">🔒 HTTPS Live</span>
-                      </div>
                     </div>
                   </div>
                 ))}
           </div>
 
-          {/* CALL TO ACTION */}
-          <footer className="text-center text-xs text-gray-500 pt-12 pb-8 space-y-3">
+          <footer className="text-center text-xs text-gray-500 pt-12 pb-4 space-y-2">
             <div className="flex justify-center flex-wrap gap-2 text-[11px]">
               <span>Quant ML Stack •</span>
               <span>PyTorch • CUDA • FastAPI • Render • Next.js • Tailwind</span>
             </div>
-
-            <p className="text-sm text-white mt-2">
-              💼 Available for contract work, ML infra, or startup consulting.
-            </p>
-
-            <a
-              href="mailto:jboggs.econ@gmail.com"
-              className="inline-block mt-2 px-4 py-2 rounded-md text-white bg-[#81D8D0]/80 hover:bg-[#81D8D0] transition"
-            >
-              Contact James → jboggs.econ@gmail.com
-            </a>
-
-            <p className="pt-4 text-[11px] text-gray-500">
+            <p>
               © {new Date().getFullYear()} James Boggs – Built for Real-Time Quant Systems
             </p>
           </footer>
