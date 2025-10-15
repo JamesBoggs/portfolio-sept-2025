@@ -10,14 +10,15 @@ import {
 } from "recharts";
 
 const notebookPaths = {
-  pricing: "02_pricing_bandits_kaseya.html",
-  forecast: "04_forecast_revenue.html",
-  montecarlo: "03_montecarlo_sim.html",
-  elasticity: "01_elasticity_sim.html",
-  sentiment: "05_sentiment_analysis.html",
+  montecarlo: "01_montecarlo.html",
+  elasticity: "02_elasticity.html",
+  pricing: "03_price_engine.html",
+  forecast: "04_forecast.html",
+  sentiment: "05_sentiment_stub.html",
   volatility: "06_volatility_garch.html",
-  "rl-pricing": "07_rl_pricing_engine.html",
+  "rl-pricing": "07_rl_pricing_stub.html",
 };
+
 
 const repoLinks = {
   pricing: "https://github.com/jamesboggs/pricing-engine-fastapi",
