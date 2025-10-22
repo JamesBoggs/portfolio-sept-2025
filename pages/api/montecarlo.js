@@ -1,125 +1,84 @@
 // pages/api/montecarlo.js
-const CONTROLLER = process.env.CONTROLLER_BASE || "https://portfolio-api-ize1.onrender.com";
-const DIRECT     = process.env.MONTECARLO_BASE || "https://montecarlo-fastapi.onrender.com";
+export const config = { api: { bodyParser: true } };
+
+const CONTROLLER = (process.env.CONTROLLER_BASE || "https://portfolio-api-ize1.onrender.com").trim().replace(/\/+$/,"");
+const DIRECT     = (process.env.MONTECARLO_BASE || "https://montecarlo-fastapi.onrender.com").trim().replace(/\/+$/,"");
 const DEBUG      = process.env.FRONTEND_DEBUG === "1";
 
-const withTimeout = (p, ms = 6000) =>
+const withTimeout = (p, ms = 6500) =>
   Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
 
-async function fetchEither(url, method = "GET", body = undefined) {
+async function call(url, method="GET", body) {
   const t0 = Date.now();
-  const opt = { method, headers: { accept: "application/json" } };
-  if (body) {
-    opt.headers["content-type"] = "application/json";
-    opt.body = JSON.stringify(body);
-  }
-  const resp = await withTimeout(fetch(url, opt));
+  const opts = { method, headers: { accept: "application/json" } };
+  if (body) { opts.headers["content-type"] = "application/json"; opts.body = JSON.stringify(body); }
+  const resp = await withTimeout(fetch(url, opts));
   const latency = Date.now() - t0;
-
-  // Try JSON first; if it fails, capture text
-  let text = null, json = null;
-  try { json = await resp.json(); }
-  catch {
-    try { text = await resp.text(); } catch {}
-  }
-
-  // If controller wrapper { ok, data }, unwrap
-  let payload = json && typeof json === "object" && "data" in json ? json.data : json ?? text;
-
-  return { ok: resp.ok, status: resp.status, latency, payload, headers: Object.fromEntries(resp.headers.entries()) };
+  let data=null, text=null;
+  try { data = await resp.json(); } catch { try { text = await resp.text(); } catch {} }
+  const payload = data && typeof data==="object" && "data" in data ? data.data : (data ?? text);
+  return { ok: resp.ok, status: resp.status, latency, url, payload };
 }
 
-function deepNumericSeries(any) {
-  // returns one numeric array if found anywhere in the structure
-  const isNum = (v) => typeof v === "number" || (!!v && !isNaN(Number(v)));
-  const isNumArr = (a) => Array.isArray(a) && a.length > 1 && a.every(isNum);
-  const isNumArrArr = (a) => Array.isArray(a) && a.length > 0 && Array.isArray(a[0]) && a[0].every(isNum);
-
-  // 1) direct array
-  if (isNumArr(any)) return any;
-
-  // 2) array-of-arrays → first one
-  if (isNumArrArr(any)) return any[0];
-
-  // 3) object: check common keys
-  if (any && typeof any === "object" && !Array.isArray(any)) {
-    const common = ["series", "path", "values", "prices", "y", "trajectory", "samples", "paths"];
-    for (const k of common) {
-      if (isNumArr(any[k])) return any[k];
-      if (isNumArrArr(any[k])) return any[k][0];
+function isNum(v){ return typeof v==="number" || (!!v && !isNaN(Number(v))); }
+function deepSeries(x){
+  const arr=x;
+  if(Array.isArray(arr)){
+    if(arr.length>1 && arr.every(isNum)) return arr;
+    for(const v of arr){ const f=deepSeries(v); if(f) return f; }
+  }else if(x && typeof x==="object"){
+    for(const k of ["series","path","values","prices","y","trajectory","samples","paths"]){
+      const v=x[k];
+      if(Array.isArray(v) && v.length>1 && v.every(isNum)) return v;
+      if(Array.isArray(v) && v[0] && Array.isArray(v[0]) && v[0].every(isNum)) return v[0];
     }
-    // 4) fallback: scan all values recursively
-    for (const v of Object.values(any)) {
-      const found = deepNumericSeries(v);
-      if (found) return found;
-    }
-  }
-  // 5) array (mixed): scan each element
-  if (Array.isArray(any)) {
-    for (const v of any) {
-      const found = deepNumericSeries(v);
-      if (found) return found;
-    }
+    for(const v of Object.values(x)){ const f=deepSeries(v); if(f) return f; }
   }
   return null;
 }
+function toChart(d){ const s=deepSeries(d)||[]; const step=Math.ceil(s.length/400)||1; return s.filter((_,i)=>i%step===0).map((y,i)=>({x:i,y:Number(y)})); }
 
-function toChart(data) {
-  const series = deepNumericSeries(data);
-  if (!series) return [];
-  const step = Math.ceil(series.length / 400) || 1;
-  return series.filter((_, i) => i % step === 0).map((y, i) => ({ x: i, y: Number(y) }));
-}
-
-export default async function handler(req, res) {
-  const q = new URLSearchParams(req.query || {}).toString();
-
-  // Candidate calls: controller GET -> controller POST -> direct GET -> direct POST
-  const calls = [
-    { url: `${CONTROLLER.replace(/\/+$/, "")}/v1/montecarlo/simulate${q ? `?${q}` : ""}`, method: "GET" },
-    { url: `${CONTROLLER.replace(/\/+$/, "")}/v1/montecarlo/simulate`, method: "POST", body: req.body || {} },
-    { url: `${DIRECT.replace(/\/+$/, "")}/simulate${q ? `?${q}` : ""}`, method: "GET" },
-    { url: `${DIRECT.replace(/\/+$/, "")}/simulate`, method: "POST", body: req.body || {} },
+export default async function handler(req,res){
+  const q = new URLSearchParams(req.query||{}).toString();
+  const candidates = [
+    `${CONTROLLER}/v1/montecarlo/simulate${q ? `?${q}` : ""}`,      // GET
+    `${DIRECT}/simulate${q ? `?${q}` : ""}`,                         // GET
+    `${CONTROLLER}/v1/montecarlo/simulate`,                         // POST
+    `${DIRECT}/simulate`,                                           // POST
   ];
 
-  let used = null, result = null;
-  for (const c of calls) {
-    try {
-      const r = await fetchEither(c.url, c.method, c.body);
-      used = { url: c.url, method: c.method };
-      // Accept anything truthy as payload; don’t force a shape
-      if (r.ok && (r.payload !== null && r.payload !== undefined)) { result = r; break; }
-      // If not ok but body exists, still surface it for debugging
-      if (!result) result = r;
-    } catch (e) {
-      if (!result) result = { ok: false, status: 0, latency: null, payload: { error: String(e) } };
+  let result=null;
+  for(const [i,url] of candidates.entries()){
+    try{
+      const method = i<2 ? "GET" : "POST";
+      const body = method==="POST" ? (req.body || {}) : undefined;
+      const r = await call(url, method, body);
+      result = result || r;
+      if(r.ok && r.payload!==undefined) { result=r; break; }
+    }catch(e){
+      result = result || { ok:false, status:0, latency:null, url, payload: { error: e?.message || String(e) } };
     }
   }
 
-  // Health: mark online if either controller or direct /health is OK
-  let healthy = false;
-  const healths = [
-    `${CONTROLLER.replace(/\/+$/, "")}/health`,
-    `${DIRECT.replace(/\/+$/, "")}/health`,
-  ];
-  for (const h of healths) {
-    try {
-      const r = await withTimeout(fetch(h, { headers: { accept: "application/json" } }), 1500);
-      if (r.ok) { healthy = true; break; }
-    } catch {}
+  // health
+  let healthy=false;
+  for(const base of [CONTROLLER,DIRECT]){
+    for(const hp of ["health","healthz"]){
+      try{ const h=await withTimeout(fetch(`${base}/${hp}`,{headers:{accept:"application/json"}}),1500); if(h.ok){healthy=true;break;} }catch{}
+    }
+    if(healthy) break;
   }
 
-  const data = result?.payload ?? { error: "No payload" };
-  const chartData = toChart(data);
-
-  res.status(200).json({
-    status: healthy ? "online" : "offline",
+  const status = healthy ? (result?.ok ? "online" : "degraded") : "offline";
+  const data = result?.payload ?? { error:"No payload" };
+  return res.status(200).json({
+    status,
+    endpoint_status: result?.status ?? null,
+    endpoint_url: result?.url ?? null,
     latency_ms: result?.latency ?? null,
     lastUpdated: new Date().toISOString(),
     data,
-    chartData,
-    source: used?.url,
-    method: used?.method,
-    debug: DEBUG ? { http_status: result?.status, headers: result?.headers } : undefined,
+    chartData: result?.ok ? toChart(data) : [],
+    debug: DEBUG ? { tried: candidates } : undefined
   });
 }

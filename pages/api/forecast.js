@@ -1,108 +1,85 @@
 // pages/api/forecast.js
-const CONTROLLER = process.env.CONTROLLER_BASE || "https://portfolio-api-ize1.onrender.com";
-const DIRECT     = process.env.FORECAST_BASE  || "https://forecast-fastapi.onrender.com";
+export const config = { api: { bodyParser: true } };
+
+const CONTROLLER = (process.env.CONTROLLER_BASE || "https://portfolio-api-ize1.onrender.com").trim().replace(/\/+$/,"");
+const DIRECT     = (process.env.FORECAST_BASE  || "https://forecast-fastapi.onrender.com").trim().replace(/\/+$/,"");
 const DEBUG      = process.env.FRONTEND_DEBUG === "1";
 
-const withTimeout = (p, ms = 6000) =>
+const withTimeout = (p, ms = 7000) =>
   Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
 
-async function fetchEither(url, method = "GET", body = undefined) {
-  const t0 = Date.now();
-  const opt = { method, headers: { accept: "application/json" } };
-  if (body) {
-    opt.headers["content-type"] = "application/json";
-    opt.body = JSON.stringify(body);
-  }
-  const resp = await withTimeout(fetch(url, opt));
-  const latency = Date.now() - t0;
+function defaultSeed(n=12){ let x=100,out=[]; for(let i=0;i<n;i++){ x += (Math.random()-0.5)*2 + 0.1; out.push(+x.toFixed(2)); } return out; }
 
-  let text = null, json = null;
-  try { json = await resp.json(); }
-  catch {
-    try { text = await resp.text(); } catch {}
-  }
-  let payload = json && typeof json === "object" && "data" in json ? json.data : json ?? text;
-  return { ok: resp.ok, status: resp.status, latency, payload, headers: Object.fromEntries(resp.headers.entries()) };
+async function post(url, body){
+  const t0=Date.now();
+  const resp = await withTimeout(fetch(url, { method:"POST", headers:{accept:"application/json","content-type":"application/json"}, body: JSON.stringify(body)}));
+  const latency=Date.now()-t0;
+  let data=null, text=null;
+  try{ data=await resp.json(); }catch{ try{ text=await resp.text(); }catch{} }
+  return { ok:resp.ok, status:resp.status, latency, url, data: data ?? text };
 }
 
-function deepNumericSeries(any) {
-  const isNum = (v) => typeof v === "number" || (!!v && !isNaN(Number(v)));
-  const isNumArr = (a) => Array.isArray(a) && a.length > 1 && a.every(isNum);
-  const isNumArrArr = (a) => Array.isArray(a) && a.length > 0 && Array.isArray(a[0]) && a[0].every(isNum);
-  if (isNumArr(any)) return any;
-  if (isNumArrArr(any)) return any[0];
-  if (any && typeof any === "object" && !Array.isArray(any)) {
-    const common = ["forecast", "yhat", "pred", "values", "series", "y", "path"];
-    for (const k of common) {
-      if (isNumArr(any[k])) return any[k];
-      if (isNumArrArr(any[k])) return any[k][0];
+function isNum(v){ return typeof v==="number" || (!!v && !isNaN(Number(v))); }
+function deepSeries(x){
+  if(Array.isArray(x)){ if(x.length>1 && x.every(isNum)) return x; for(const v of x){ const f=deepSeries(v); if(f) return f; } }
+  else if(x && typeof x==="object"){
+    for(const k of ["forecast","yhat","pred","y","values","series","path","trajectory","output"]){
+      const v=x[k]; if(Array.isArray(v)&&v.length>1&&v.every(isNum)) return v;
+      if(Array.isArray(v)&&v[0]&&Array.isArray(v[0])&&v[0].every(isNum)) return v[0];
     }
-    for (const v of Object.values(any)) {
-      const found = deepNumericSeries(v);
-      if (found) return found;
-    }
-  }
-  if (Array.isArray(any)) {
-    for (const v of any) {
-      const found = deepNumericSeries(v);
-      if (found) return found;
-    }
+    for(const v of Object.values(x)){ const f=deepSeries(v); if(f) return f; }
   }
   return null;
 }
+const toChart = (d)=>{ const s=deepSeries(d)||[]; const step=Math.ceil(s.length/400)||1; return s.filter((_,i)=>i%step===0).map((y,i)=>({x:i,y:Number(y)})); };
 
-function toChart(data) {
-  const series = deepNumericSeries(data);
-  if (!series) return [];
-  const step = Math.ceil(series.length / 400) || 1;
-  return series.filter((_, i) => i % step === 0).map((y, i) => ({ x: i, y: Number(y) }));
-}
+export default async function handler(req,res){
+  // exactly 12 values per service requirement
+  const body = (req?.body && Array.isArray(req.body.values))
+    ? { values: req.body.values.slice(0,12) }
+    : { values: defaultSeed(12) };
 
-export default async function handler(req, res) {
-  const q = new URLSearchParams(req.query || {}).toString();
+  // health (so badge reflects reality)
+  let healthy=false;
+  for(const base of [CONTROLLER,DIRECT]){
+    for(const hp of ["health","healthz"]){
+      try{ const r=await withTimeout(fetch(`${base}/${hp}`,{headers:{accept:"application/json"}}),1500); if(r.ok){healthy=true;break;} }catch{}
+    }
+    if(healthy) break;
+  }
 
-  const calls = [
-    { url: `${CONTROLLER.replace(/\/+$/, "")}/v1/forecast/predict${q ? `?${q}` : ""}`, method: "GET" },
-    { url: `${CONTROLLER.replace(/\/+$/, "")}/v1/forecast/predict`, method: "POST", body: req.body || {} },
-    { url: `${DIRECT.replace(/\/+$/, "")}/predict${q ? `?${q}` : ""}`, method: "GET" },
-    { url: `${DIRECT.replace(/\/+$/, "")}/predict`, method: "POST", body: req.body || {} },
+  // Always POST /predict; controller first, then direct
+  const endpoints = [
+    `${CONTROLLER}/v1/forecast/predict`,
+    `${DIRECT}/predict`
   ];
 
-  let used = null, result = null;
-  for (const c of calls) {
-    try {
-      const r = await fetchEither(c.url, c.method, c.body);
-      used = { url: c.url, method: c.method };
-      if (r.ok && (r.payload !== null && r.payload !== undefined)) { result = r; break; }
-      if (!result) result = r;
-    } catch (e) {
-      if (!result) result = { ok: false, status: 0, latency: null, payload: { error: String(e) } };
+  let final=null;
+  for(const url of endpoints){
+    try{
+      const r = await post(url, body);
+      final = final || r;      // keep first attempt for debug
+      if(r.ok){ final=r; break; }
+    }catch(e){
+      const msg=e?.message || String(e);
+      final = final || { ok:false, status:0, latency:null, url, data:{error:msg} };
     }
   }
 
-  let healthy = false;
-  const healths = [
-    `${CONTROLLER.replace(/\/+$/, "")}/health`,
-    `${DIRECT.replace(/\/+$/, "")}/health`,
-  ];
-  for (const h of healths) {
-    try {
-      const r = await withTimeout(fetch(h, { headers: { accept: "application/json" } }), 1500);
-      if (r.ok) { healthy = true; break; }
-    } catch {}
-  }
+  let status = "offline";
+  if(healthy && final?.ok) status = "online";
+  else if(healthy && !final?.ok) status = "degraded";
 
-  const data = result?.payload ?? { error: "No payload" };
-  const chartData = toChart(data);
-
-  res.status(200).json({
-    status: healthy ? "online" : "offline",
-    latency_ms: result?.latency ?? null,
+  const niceErr = (!final?.ok && final?.data && typeof final.data==="object" && final.data.detail) ? String(final.data.detail) : null;
+  const data = final?.data ?? { error:"No payload" };
+  return res.status(200).json({
+    status,
+    endpoint_status: final?.status ?? null,
+    endpoint_url: final?.url ?? null,
+    latency_ms: final?.latency ?? null,
     lastUpdated: new Date().toISOString(),
-    data,
-    chartData,
-    source: used?.url,
-    method: used?.method,
-    debug: DEBUG ? { http_status: result?.status, headers: result?.headers } : undefined,
+    data: niceErr ? { error: niceErr } : data,
+    chartData: final?.ok ? toChart(data) : [],
+    debug: DEBUG ? { sent_values_len: body.values.length } : undefined
   });
 }
