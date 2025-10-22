@@ -1,6 +1,7 @@
 // pages/index.js
 import Head from "next/head";
 import { useEffect, useState } from "react";
+import SkeletonCard from "../components/SkeletonCard";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 function StatusBadge({ status }) {
@@ -66,6 +67,7 @@ export default function Home() {
         };
       }
     };
+
     (async () => {
       const [mc, fc] = await Promise.all([
         fetchCard("montecarlo", "/api/montecarlo"),
@@ -99,35 +101,46 @@ export default function Home() {
           </header>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {cards.map((m, i) => (
-              <div key={i}>
-                <div className="circuit-frame rounded-2xl hover:scale-[1.01] transition-transform">
-                  <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 backdrop-blur-sm">
-                    <h2 className="text-lg font-bold text-[#81D8D0] mb-1">
-                      {m.model === "montecarlo" ? "Monte Carlo" : "Forecast"}
-                    </h2>
-                    <StatusBadge status={m.status} />
-                    <p className="text-[10px] text-gray-400 mb-2">
-                      {m.version} • {m.framework} • Latency: {m.latency ? `${m.latency}ms` : "—"}
-                    </p>
-                    <div className="h-[140px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={m.chartData}>
-                          <Line type="monotone" dataKey="y" stroke="#81D8D0" strokeWidth={2} dot={false} />
-                          <XAxis dataKey="x" hide /><YAxis hide /><Tooltip />
-                        </LineChart>
-                      </ResponsiveContainer>
+            {cards.length === 0 ? (
+              <>
+                <SkeletonCard />
+                <SkeletonCard />
+              </>
+            ) : (
+              cards.map((m, i) => (
+                <div key={i}>
+                  <div className="circuit-frame rounded-2xl hover:scale-[1.01] transition-transform">
+                    <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 backdrop-blur-sm">
+                      <h2 className="text-lg font-bold text-[#81D8D0] mb-1">
+                        {m.model === "montecarlo" ? "Monte Carlo" : "Forecast"}
+                      </h2>
+                      <StatusBadge status={m.status} />
+                      <p className="text-[10px] text-gray-400 mb-2">
+                        {m.version} • {m.framework} • Latency: {m.latency ? `${m.latency}ms` : "—"}
+                      </p>
+                      <div className="h-[140px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={m.chartData}>
+                            <Line type="monotone" dataKey="y" stroke="#81D8D0" strokeWidth={2} dot={false} />
+                            <XAxis dataKey="x" hide />
+                            <YAxis hide />
+                            <Tooltip />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-40">
+                        {JSON.stringify(m.data, null, 2)}
+                      </pre>
+                      {m.endpoint_url && (
+                        <p className="text-[10px] text-gray-500 mt-2 break-all">
+                          Endpoint: {m.endpoint_url} • {m.endpoint_status ?? ""}
+                        </p>
+                      )}
                     </div>
-                    <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-40">
-                      {JSON.stringify(m.data, null, 2)}
-                    </pre>
-                    {m.endpoint_url && (
-                      <p className="text-[10px] text-gray-500 mt-2 break-all">Endpoint: {m.endpoint_url} • {m.endpoint_status ?? ""}</p>
-                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
           <footer className="text-center text-xs text-gray-500 pt-12 pb-4 space-y-2">
