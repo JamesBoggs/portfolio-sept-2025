@@ -33,14 +33,43 @@ function StatusBadge({ status }) {
 }
 
 function MonteCarloInner() {
-  const [card, setCard] = useState({
-    status: "offline",
-    latency: null,
-    data: { note: "loading…" },
-    chartData: [],
-    endpoint_url: null,
-    endpoint_status: null,
-  });
+  const [card, setCard] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const t0 = performance.now();
+        const r = await fetch("/api/montecarlo");
+        const j = await r.json();
+        setCard({
+          status: j?.status || (r.ok ? "online" : "offline"),
+          latency: j?.latency_ms ?? Math.round(performance.now() - t0),
+          data: j?.data || {},
+          chartData: j?.chartData || [],
+          endpoint_url: j?.endpoint_url || j?.source || null,
+          endpoint_status: j?.endpoint_status ?? null,
+        });
+      } catch (e) {
+        setCard({
+          status: "offline",
+          latency: null,
+          data: { error: e?.message || "fetch failed" },
+          chartData: [],
+        });
+      }
+    })();
+  }, []);
+
+  if (!card) {
+    // show skeleton until fetch finishes
+    return (
+      <div className="min-h-screen bg-dashboard text-white p-6 flex justify-center items-center">
+        <SkeletonCard />
+      </div>
+    );
+  }
+
+  /* --- your real card markup follows --- */
 
   useEffect(() => {
     (async () => {
