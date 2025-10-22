@@ -2,6 +2,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import SkeletonCard from "../components/SkeletonCard";   // <-- new line
 
 function StatusBadge({ status }) {
   if (status === "online") {
