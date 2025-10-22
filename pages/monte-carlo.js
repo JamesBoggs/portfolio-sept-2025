@@ -2,7 +2,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import SkeletonCard from "../components/SkeletonCard";   // <-- new line
+import SkeletonCard from "../components/SkeletonCard";
 
 function StatusBadge({ status }) {
   if (status === "online") {
@@ -33,13 +33,13 @@ function StatusBadge({ status }) {
 }
 
 function MonteCarloInner() {
-  const [card, setCard] = useState(null);
+  const [card, setCard] = useState(null); // null => show skeleton
 
   useEffect(() => {
     (async () => {
       try {
         const t0 = performance.now();
-        const r = await fetch("/api/montecarlo");
+        const r = await fetch("/api/montecarlo", { cache: "no-store" });
         const j = await r.json();
         setCard({
           status: j?.status || (r.ok ? "online" : "offline"),
@@ -60,8 +60,8 @@ function MonteCarloInner() {
     })();
   }, []);
 
+  // SKELETON while loading
   if (!card) {
-    // show skeleton until fetch finishes
     return (
       <div className="min-h-screen bg-dashboard text-white p-6 flex justify-center items-center">
         <SkeletonCard />
@@ -69,28 +69,7 @@ function MonteCarloInner() {
     );
   }
 
-  /* --- your real card markup follows --- */
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const t0 = performance.now();
-        const r = await fetch("/api/montecarlo");
-        const j = await r.json();
-        setCard({
-          status: j?.status || (r.ok ? "online" : "offline"),
-          latency: j?.latency_ms ?? Math.round(performance.now() - t0),
-          data: j?.data || {},
-          chartData: j?.chartData || [],
-          endpoint_url: j?.endpoint_url || j?.source || null,
-          endpoint_status: j?.endpoint_status ?? null,
-        });
-      } catch (e) {
-        setCard((c) => ({ ...c, status: "offline", data: { error: e?.message || "fetch failed" } }));
-      }
-    })();
-  }, []);
-
+  // REAL CARD
   return (
     <div className="min-h-screen bg-dashboard text-white p-6">
       <h1 className="text-3xl font-bold mb-4">Monte Carlo</h1>
@@ -128,6 +107,6 @@ function MonteCarloInner() {
   );
 }
 
-// Prevent server-side render/prerender from touching runtime data.
+// Prevent SSR/prerender accessing runtime data
 export const getStaticProps = async () => ({ props: {} });
 export default dynamic(() => Promise.resolve(MonteCarloInner), { ssr: false });
