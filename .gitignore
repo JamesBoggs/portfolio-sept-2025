@@ -1,4 +1,9 @@
-﻿node_modules/
+node_modules/
 .next/
-.env*
+out/
+venv/
+__pycache__/
+*.pyc
+.env
+.env.local
 .DS_Store
