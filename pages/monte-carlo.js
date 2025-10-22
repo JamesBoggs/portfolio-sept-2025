@@ -1,12 +1,3 @@
-cd "$HOME/Portfolio October 2025/portfolio-sept-2025"
-
-# 1) make sure there isn't a second file shadowing it
-ls -1 pages | grep -i 'monte' || true
-# if you see pages/monte-carlo.tsx (or .jsx), remove it:
-git rm -f pages/monte-carlo.tsx 2>/dev/null || true
-
-# 2) overwrite the page with a client-only version
-cat > pages/monte-carlo.js <<'EOF'
 // pages/monte-carlo.js — client-only
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
@@ -77,7 +68,9 @@ function MonteCarloInner() {
       <div className="circuit-frame rounded-2xl max-w-3xl">
         <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 backdrop-blur-sm">
           <StatusBadge status={card.status} />
-          <p className="text-[10px] text-gray-400 mb-2">Latency: {card.latency ? `${card.latency}ms` : "—"}</p>
+          <p className="text-[10px] text-gray-400 mb-2">
+            Latency: {card.latency ? `${card.latency}ms` : "—"}
+          </p>
 
           <div className="h-[220px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -105,7 +98,6 @@ function MonteCarloInner() {
   );
 }
 
-// prevent any server-side render/prerender
+// Prevent server-side render/prerender from touching runtime data.
 export const getStaticProps = async () => ({ props: {} });
 export default dynamic(() => Promise.resolve(MonteCarloInner), { ssr: false });
-EOF
