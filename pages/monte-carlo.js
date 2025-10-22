@@ -1,67 +1,125 @@
-import { useState } from 'react';
-import dynamic from 'next/dynamic';
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+// pages/api/montecarlo.js
+const CONTROLLER = process.env.CONTROLLER_BASE || "https://portfolio-api-ize1.onrender.com";
+const DIRECT     = process.env.MONTECARLO_BASE || "https://montecarlo-fastapi.onrender.com";
+const DEBUG      = process.env.FRONTEND_DEBUG === "1";
 
-export default function MonteCarlo() {
-  const [start, setStart] = useState(1000000);
-  const [growth, setGrowth] = useState(0.05);
-  const [churn, setChurn] = useState(0.02);
-  const [sigma, setSigma] = useState(0.03);
-  const [months, setMonths] = useState(12);
-  const [sims, setSims] = useState(5000);
-  const [data, setData] = useState([]);
+const withTimeout = (p, ms = 6000) =>
+  Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
 
-  const runSim = () => {
-    const arrs = [];
-    for (let s = 0; s < sims; s++) {
-      let series = [start];
-      for (let t = 1; t < months; t++) {
-        const shock = (growth - churn) + sigma * (Math.random() - 0.5);
-        series.push(series[t - 1] * (1 + shock));
-      }
-      arrs.push(series);
+async function fetchEither(url, method = "GET", body = undefined) {
+  const t0 = Date.now();
+  const opt = { method, headers: { accept: "application/json" } };
+  if (body) {
+    opt.headers["content-type"] = "application/json";
+    opt.body = JSON.stringify(body);
+  }
+  const resp = await withTimeout(fetch(url, opt));
+  const latency = Date.now() - t0;
+
+  // Try JSON first; if it fails, capture text
+  let text = null, json = null;
+  try { json = await resp.json(); }
+  catch {
+    try { text = await resp.text(); } catch {}
+  }
+
+  // If controller wrapper { ok, data }, unwrap
+  let payload = json && typeof json === "object" && "data" in json ? json.data : json ?? text;
+
+  return { ok: resp.ok, status: resp.status, latency, payload, headers: Object.fromEntries(resp.headers.entries()) };
+}
+
+function deepNumericSeries(any) {
+  // returns one numeric array if found anywhere in the structure
+  const isNum = (v) => typeof v === "number" || (!!v && !isNaN(Number(v)));
+  const isNumArr = (a) => Array.isArray(a) && a.length > 1 && a.every(isNum);
+  const isNumArrArr = (a) => Array.isArray(a) && a.length > 0 && Array.isArray(a[0]) && a[0].every(isNum);
+
+  // 1) direct array
+  if (isNumArr(any)) return any;
+
+  // 2) array-of-arrays → first one
+  if (isNumArrArr(any)) return any[0];
+
+  // 3) object: check common keys
+  if (any && typeof any === "object" && !Array.isArray(any)) {
+    const common = ["series", "path", "values", "prices", "y", "trajectory", "samples", "paths"];
+    for (const k of common) {
+      if (isNumArr(any[k])) return any[k];
+      if (isNumArrArr(any[k])) return any[k][0];
     }
-    const mean = Array.from({ length: months }, (_, i) =>
-      arrs.reduce((a, b) => a + b[i], 0) / sims
-    );
-    setData(mean);
-  };
+    // 4) fallback: scan all values recursively
+    for (const v of Object.values(any)) {
+      const found = deepNumericSeries(v);
+      if (found) return found;
+    }
+  }
+  // 5) array (mixed): scan each element
+  if (Array.isArray(any)) {
+    for (const v of any) {
+      const found = deepNumericSeries(v);
+      if (found) return found;
+    }
+  }
+  return null;
+}
 
-  return (
-    <div className="p-6">
-      <h1 className="text-3xl font-semibold mb-4">Monte Carlo ARR Forecast</h1>
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <label>Start ARR ($)
-          <input type="number" value={start} onChange={e => setStart(+e.target.value)} className="border p-1 w-full"/>
-        </label>
-        <label>Mean Growth (e.g. 0.05)
-          <input type="number" step="0.01" value={growth} onChange={e => setGrowth(+e.target.value)} className="border p-1 w-full"/>
-        </label>
-        <label>Mean Churn
-          <input type="number" step="0.01" value={churn} onChange={e => setChurn(+e.target.value)} className="border p-1 w-full"/>
-        </label>
-        <label>Volatility (σ)
-          <input type="number" step="0.01" value={sigma} onChange={e => setSigma(+e.target.value)} className="border p-1 w-full"/>
-        </label>
-        <label>Months
-          <input type="number" value={months} onChange={e => setMonths(+e.target.value)} className="border p-1 w-full"/>
-        </label>
-        <label>Simulations
-          <input type="number" value={sims} onChange={e => setSims(+e.target.value)} className="border p-1 w-full"/>
-        </label>
-      </div>
-      <button onClick={runSim} className="bg-blue-600 text-white px-4 py-2 rounded">Run Simulation</button>
+function toChart(data) {
+  const series = deepNumericSeries(data);
+  if (!series) return [];
+  const step = Math.ceil(series.length / 400) || 1;
+  return series.filter((_, i) => i % step === 0).map((y, i) => ({ x: i, y: Number(y) }));
+}
 
-      {data.length > 0 && (
-        <Plot
-          data={[{ y: data, type: 'scatter', mode: 'lines', line: { color: 'blue' } }]}
-          layout={{
-            title: 'Expected ARR Over Time',
-            xaxis: { title: 'Months' },
-            yaxis: { title: 'ARR ($)' },
-          }}
-        />
-      )}
-    </div>
-  );
+export default async function handler(req, res) {
+  const q = new URLSearchParams(req.query || {}).toString();
+
+  // Candidate calls: controller GET -> controller POST -> direct GET -> direct POST
+  const calls = [
+    { url: `${CONTROLLER.replace(/\/+$/, "")}/v1/montecarlo/simulate${q ? `?${q}` : ""}`, method: "GET" },
+    { url: `${CONTROLLER.replace(/\/+$/, "")}/v1/montecarlo/simulate`, method: "POST", body: req.body || {} },
+    { url: `${DIRECT.replace(/\/+$/, "")}/simulate${q ? `?${q}` : ""}`, method: "GET" },
+    { url: `${DIRECT.replace(/\/+$/, "")}/simulate`, method: "POST", body: req.body || {} },
+  ];
+
+  let used = null, result = null;
+  for (const c of calls) {
+    try {
+      const r = await fetchEither(c.url, c.method, c.body);
+      used = { url: c.url, method: c.method };
+      // Accept anything truthy as payload; don’t force a shape
+      if (r.ok && (r.payload !== null && r.payload !== undefined)) { result = r; break; }
+      // If not ok but body exists, still surface it for debugging
+      if (!result) result = r;
+    } catch (e) {
+      if (!result) result = { ok: false, status: 0, latency: null, payload: { error: String(e) } };
+    }
+  }
+
+  // Health: mark online if either controller or direct /health is OK
+  let healthy = false;
+  const healths = [
+    `${CONTROLLER.replace(/\/+$/, "")}/health`,
+    `${DIRECT.replace(/\/+$/, "")}/health`,
+  ];
+  for (const h of healths) {
+    try {
+      const r = await withTimeout(fetch(h, { headers: { accept: "application/json" } }), 1500);
+      if (r.ok) { healthy = true; break; }
+    } catch {}
+  }
+
+  const data = result?.payload ?? { error: "No payload" };
+  const chartData = toChart(data);
+
+  res.status(200).json({
+    status: healthy ? "online" : "offline",
+    latency_ms: result?.latency ?? null,
+    lastUpdated: new Date().toISOString(),
+    data,
+    chartData,
+    source: used?.url,
+    method: used?.method,
+    debug: DEBUG ? { http_status: result?.status, headers: result?.headers } : undefined,
+  });
 }
