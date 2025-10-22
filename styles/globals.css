@@ -16,7 +16,13 @@ html, body {
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
-
+@keyframes pulse-glow {
+  0%, 100% { opacity: .8; }
+  50% { opacity: .4; }
+}
+.animate-pulse {
+  animation: pulse-glow 1.4s ease-in-out infinite;
+}
 @keyframes pulseGlow {
   0%,100% {
     box-shadow:
