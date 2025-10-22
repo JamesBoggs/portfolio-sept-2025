@@ -61,13 +61,16 @@ function MonteCarloInner() {
   }, []);
 
   // SKELETON while loading
-  if (!card) {
-    return (
-      <div className="min-h-screen bg-dashboard text-white p-6 flex justify-center items-center">
+  if (card === null) {
+  return (
+    <div className="min-h-screen bg-black text-white p-6 flex justify-center items-center">
+      <div className="text-center space-y-4">
         <SkeletonCard />
+        <p className="text-xs text-white/60">Loading simulation…</p>
       </div>
-    );
-  }
+    </div>
+  );
+
 
   // REAL CARD
   return (
