@@ -1,125 +1,111 @@
-// pages/api/montecarlo.js
-const CONTROLLER = process.env.CONTROLLER_BASE || "https://portfolio-api-ize1.onrender.com";
-const DIRECT     = process.env.MONTECARLO_BASE || "https://montecarlo-fastapi.onrender.com";
-const DEBUG      = process.env.FRONTEND_DEBUG === "1";
+cd "$HOME/Portfolio October 2025/portfolio-sept-2025"
 
-const withTimeout = (p, ms = 6000) =>
-  Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
+# 1) make sure there isn't a second file shadowing it
+ls -1 pages | grep -i 'monte' || true
+# if you see pages/monte-carlo.tsx (or .jsx), remove it:
+git rm -f pages/monte-carlo.tsx 2>/dev/null || true
 
-async function fetchEither(url, method = "GET", body = undefined) {
-  const t0 = Date.now();
-  const opt = { method, headers: { accept: "application/json" } };
-  if (body) {
-    opt.headers["content-type"] = "application/json";
-    opt.body = JSON.stringify(body);
+# 2) overwrite the page with a client-only version
+cat > pages/monte-carlo.js <<'EOF'
+// pages/monte-carlo.js — client-only
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+
+function StatusBadge({ status }) {
+  if (status === "online") {
+    return (
+      <div className="flex items-center gap-2 text-sm mb-2">
+        <span className="relative flex h-3 w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+        </span>
+        <span>Online</span>
+      </div>
+    );
   }
-  const resp = await withTimeout(fetch(url, opt));
-  const latency = Date.now() - t0;
-
-  // Try JSON first; if it fails, capture text
-  let text = null, json = null;
-  try { json = await resp.json(); }
-  catch {
-    try { text = await resp.text(); } catch {}
+  if (status === "degraded") {
+    return (
+      <div className="flex items-center gap-2 text-sm mb-2">
+        <span className="inline-block w-3 h-3 rounded-full bg-amber-400" />
+        <span>Degraded</span>
+      </div>
+    );
   }
-
-  // If controller wrapper { ok, data }, unwrap
-  let payload = json && typeof json === "object" && "data" in json ? json.data : json ?? text;
-
-  return { ok: resp.ok, status: resp.status, latency, payload, headers: Object.fromEntries(resp.headers.entries()) };
+  return (
+    <div className="flex items-center gap-2 text-sm mb-2">
+      <span className="inline-block w-3 h-3 rounded-full bg-rose-500" />
+      <span>Offline</span>
+    </div>
+  );
 }
 
-function deepNumericSeries(any) {
-  // returns one numeric array if found anywhere in the structure
-  const isNum = (v) => typeof v === "number" || (!!v && !isNaN(Number(v)));
-  const isNumArr = (a) => Array.isArray(a) && a.length > 1 && a.every(isNum);
-  const isNumArrArr = (a) => Array.isArray(a) && a.length > 0 && Array.isArray(a[0]) && a[0].every(isNum);
-
-  // 1) direct array
-  if (isNumArr(any)) return any;
-
-  // 2) array-of-arrays → first one
-  if (isNumArrArr(any)) return any[0];
-
-  // 3) object: check common keys
-  if (any && typeof any === "object" && !Array.isArray(any)) {
-    const common = ["series", "path", "values", "prices", "y", "trajectory", "samples", "paths"];
-    for (const k of common) {
-      if (isNumArr(any[k])) return any[k];
-      if (isNumArrArr(any[k])) return any[k][0];
-    }
-    // 4) fallback: scan all values recursively
-    for (const v of Object.values(any)) {
-      const found = deepNumericSeries(v);
-      if (found) return found;
-    }
-  }
-  // 5) array (mixed): scan each element
-  if (Array.isArray(any)) {
-    for (const v of any) {
-      const found = deepNumericSeries(v);
-      if (found) return found;
-    }
-  }
-  return null;
-}
-
-function toChart(data) {
-  const series = deepNumericSeries(data);
-  if (!series) return [];
-  const step = Math.ceil(series.length / 400) || 1;
-  return series.filter((_, i) => i % step === 0).map((y, i) => ({ x: i, y: Number(y) }));
-}
-
-export default async function handler(req, res) {
-  const q = new URLSearchParams(req.query || {}).toString();
-
-  // Candidate calls: controller GET -> controller POST -> direct GET -> direct POST
-  const calls = [
-    { url: `${CONTROLLER.replace(/\/+$/, "")}/v1/montecarlo/simulate${q ? `?${q}` : ""}`, method: "GET" },
-    { url: `${CONTROLLER.replace(/\/+$/, "")}/v1/montecarlo/simulate`, method: "POST", body: req.body || {} },
-    { url: `${DIRECT.replace(/\/+$/, "")}/simulate${q ? `?${q}` : ""}`, method: "GET" },
-    { url: `${DIRECT.replace(/\/+$/, "")}/simulate`, method: "POST", body: req.body || {} },
-  ];
-
-  let used = null, result = null;
-  for (const c of calls) {
-    try {
-      const r = await fetchEither(c.url, c.method, c.body);
-      used = { url: c.url, method: c.method };
-      // Accept anything truthy as payload; don’t force a shape
-      if (r.ok && (r.payload !== null && r.payload !== undefined)) { result = r; break; }
-      // If not ok but body exists, still surface it for debugging
-      if (!result) result = r;
-    } catch (e) {
-      if (!result) result = { ok: false, status: 0, latency: null, payload: { error: String(e) } };
-    }
-  }
-
-  // Health: mark online if either controller or direct /health is OK
-  let healthy = false;
-  const healths = [
-    `${CONTROLLER.replace(/\/+$/, "")}/health`,
-    `${DIRECT.replace(/\/+$/, "")}/health`,
-  ];
-  for (const h of healths) {
-    try {
-      const r = await withTimeout(fetch(h, { headers: { accept: "application/json" } }), 1500);
-      if (r.ok) { healthy = true; break; }
-    } catch {}
-  }
-
-  const data = result?.payload ?? { error: "No payload" };
-  const chartData = toChart(data);
-
-  res.status(200).json({
-    status: healthy ? "online" : "offline",
-    latency_ms: result?.latency ?? null,
-    lastUpdated: new Date().toISOString(),
-    data,
-    chartData,
-    source: used?.url,
-    method: used?.method,
-    debug: DEBUG ? { http_status: result?.status, headers: result?.headers } : undefined,
+function MonteCarloInner() {
+  const [card, setCard] = useState({
+    status: "offline",
+    latency: null,
+    data: { note: "loading…" },
+    chartData: [],
+    endpoint_url: null,
+    endpoint_status: null,
   });
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const t0 = performance.now();
+        const r = await fetch("/api/montecarlo");
+        const j = await r.json();
+        setCard({
+          status: j?.status || (r.ok ? "online" : "offline"),
+          latency: j?.latency_ms ?? Math.round(performance.now() - t0),
+          data: j?.data || {},
+          chartData: j?.chartData || [],
+          endpoint_url: j?.endpoint_url || j?.source || null,
+          endpoint_status: j?.endpoint_status ?? null,
+        });
+      } catch (e) {
+        setCard((c) => ({ ...c, status: "offline", data: { error: e?.message || "fetch failed" } }));
+      }
+    })();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-dashboard text-white p-6">
+      <h1 className="text-3xl font-bold mb-4">Monte Carlo</h1>
+
+      <div className="circuit-frame rounded-2xl max-w-3xl">
+        <div className="circuit-inner rounded-2xl p-4 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 backdrop-blur-sm">
+          <StatusBadge status={card.status} />
+          <p className="text-[10px] text-gray-400 mb-2">Latency: {card.latency ? `${card.latency}ms` : "—"}</p>
+
+          <div className="h-[220px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={card.chartData}>
+                <Line type="monotone" dataKey="y" stroke="#81D8D0" strokeWidth={2} dot={false} />
+                <XAxis dataKey="x" hide />
+                <YAxis hide />
+                <Tooltip />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          <pre className="text-xs text-white bg-black/30 p-2 mt-3 rounded-md overflow-x-auto max-h-64">
+            {JSON.stringify(card.data, null, 2)}
+          </pre>
+
+          {card.endpoint_url && (
+            <p className="text-[10px] text-gray-500 mt-2 break-all">
+              Endpoint: {card.endpoint_url} • {card.endpoint_status ?? ""}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
+
+// prevent any server-side render/prerender
+export const getStaticProps = async () => ({ props: {} });
+export default dynamic(() => Promise.resolve(MonteCarloInner), { ssr: false });
+EOF
