@@ -89,7 +89,7 @@ export default function Home() {
                 <img src="/profile.png" alt="Profile" className="w-72 h-80 object-cover rounded-2xl border border-[#81D8D0]/40 shadow-lg" />
               </div>
             </div>
-            <h2 className="text-2xl font-extrabold mt-4">James Boggs</h2>
+            <h2 className="text-2xl font-extrabold mt-8">James Boggs</h2>
             <p className="text-gray-300 max-w-xs">Finance & AI/ML Engineer • Pricing • Volatility • Forecasting</p>
           </div>
         </aside>
