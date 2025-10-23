@@ -96,8 +96,8 @@ export default function Home() {
 
         <section className="w-full md:w-1/2 lg:w-4/5 overflow-y-auto px-4 py-8 space-y-10">
           <header className="text-center space-y-3">
-            <h1 className="text-5xl lg:text-6xl font-extrabold">LIVE <span className="text-[#81D8D0]">QUANT DASHBOARD</span></h1>
-            <p className="text-sm text-gray-400 max-w-xl mx-auto">Controller-first calls, fallback direct. Forecast posts 12 points to /predict.</p>
+            <h1 className="text-5xl lg:text-6xl font-extrabold"> <span className="text-[#81D8D0]">LIVE QUANT DASHBOARD</span></h1>
+            <p className="text-sm text-gray-400 max-w-xl mx-auto">.</p>
           </header>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -145,7 +145,7 @@ export default function Home() {
 
           <footer className="text-center text-xs text-gray-500 pt-12 pb-4 space-y-2">
             <p>Production-style ML stack with PyTorch, FastAPI, and Render.</p>
-            <p>© {new Date().getFullYear()} James Boggs — Quant ML Portfolio</p>
+            <p>© {new Date().getFullYear()} James Boggs Portfolio</p>
           </footer>
         </section>
       </main>
